@@ -15,9 +15,9 @@
         "forceConsistentCasingInFileNames": true,
 
         "outDir": "./../../static/js"
-    },
-    "files" : [],
+    }, 
     "include" : [
+        "./",
         "./../types/"
     ]
 }

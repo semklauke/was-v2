@@ -6,6 +6,8 @@ node_modules
 /static/js
 /static/js/*
 /backend.js
+/backend.js.map
+/backend.d.ts
 
 .env.local
 .env.*.local

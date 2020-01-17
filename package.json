@@ -4,7 +4,8 @@
   "description": "Walking and Sponsoring donation and walker tracking + postprocessing",
   "main": "backend.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "tsc": "tsc -b",
+    "tsc-clean" : "rm ./backend*; rm -rf ./includes; rm -rf ./static/js"
   },
   "repository": {
     "type": "git",
