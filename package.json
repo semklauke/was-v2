@@ -1,0 +1,19 @@
+{
+  "name": "was-v2",
+  "version": "0.1.0",
+  "description": "Walking and Sponsoring donation and walker tracking + postprocessing",
+  "main": "backend.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/semklauke/was-v2.git"
+  },
+  "author": "Sem Klauke",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/semklauke/was-v2/issues"
+  },
+  "homepage": "https://github.com/semklauke/was-v2#readme"
+}
