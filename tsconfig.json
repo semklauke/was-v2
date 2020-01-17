@@ -1,0 +1,31 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "allowJs": true,
+        "checkJs": true,
+        "declaration": true,
+        "sourceMap": true,
+        // "rootDir": "./",                         
+        "removeComments": true,
+        "strict": true,                           
+        "noImplicitAny": true,
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+
+        "outDir": "./"  
+    },
+    "files" : [],
+    "references": [
+        { "path": "./src/static/" },
+        { "path": "./src/" }
+    ],
+    "exclude" : [
+        "./.git/", 
+        "./node_modules/", 
+        "./node_modules/**", 
+        "./frontend/", 
+        "./frontend/**"
+    ]
+}

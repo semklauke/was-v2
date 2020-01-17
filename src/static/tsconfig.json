@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "allowJs": true,
+        "checkJs": true,
+        "declaration": true,
+        "sourceMap": true,
+        // "rootDir": "./",                         
+        "removeComments": true,
+        "strict": true,                           
+        "noImplicitAny": true,
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+
+        "outDir": "./../../static/js"
+    },
+    "files" : [],
+    "include" : [
+        "./../types/"
+    ]
+}
