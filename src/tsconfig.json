@@ -17,12 +17,14 @@
         "outDir": "./../"
     },
     "files" : [
-        "./backend.ts"
+        "./backend.ts",
+        "./../config.ts"
     ],
     "include": [ 
         "./types", 
         "./types/",
-        "./includes/"
+        "./includes/",
+        "./../config.ts"
     ],
     "exclude": [
         "./static/",
