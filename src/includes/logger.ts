@@ -1,6 +1,6 @@
 import winston from 'winston';
 import path from 'path';
-import config from 'config';
+import config from './config';
 //@ts-ignore
 import wbs from 'winston-better-sqlite3';
 
