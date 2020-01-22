@@ -1,0 +1,3 @@
+interface tttttt {
+    ttttt: string;
+}
