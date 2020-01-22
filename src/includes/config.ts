@@ -1,3 +1,5 @@
+import path from 'path';
+
 export default {
     // path of sqlite3 database file relaive to the project root
     "db" : 'laeufer.db',
@@ -9,5 +11,12 @@ export default {
     "debug" : true,
 
     // port the backend server is running on
-    "port" : 3000
+    "port" : 3000,
+
+    // paths to the ssl private key and certificate, relative to the project root
+    "ssl" : {
+        "cert" : path.join('keys', 'cert.pem'),
+        "key" : path.join('keys', 'key.pem')
+    }
+
 };

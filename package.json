@@ -6,7 +6,8 @@
   "scripts": {
     "tsc": "tsc -b",
     "tsc-clean": "rm ./backend*; rm -rf ./includes; rm -rf ./static/js",
-    "run" : "tsc -b; node backend.js"
+    "run" : "tsc -b; node backend.js",
+    "ssl" : "mkdir keys; openssl req -x509 -nodes -newkey rsa:2048 -keyout key.pem -out cert.pem -days 30"
   },
   "repository": {
     "type": "git",

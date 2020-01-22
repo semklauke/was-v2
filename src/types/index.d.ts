@@ -1,3 +1,5 @@
-interface tttttt {
-    ttttt: string;
+import { Logger, LeveledLogMethod } from 'winston';
+
+interface WasLogger extends Logger {
+    app: LeveledLogMethod;
 }
