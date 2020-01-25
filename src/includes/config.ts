@@ -17,6 +17,8 @@ export default {
     "ssl" : {
         "cert" : path.join('keys', 'cert.pem'),
         "key" : path.join('keys', 'key.pem')
-    }
+    },
 
+    // password for the front end side. pls change this
+    "password" : "abcd"
 };
