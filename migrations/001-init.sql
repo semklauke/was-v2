@@ -1,10 +1,14 @@
 -- Up
-CREATE TABLE walker (
+
+CREATE TABLE walkers (
     rec_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     class VARCHAR NOT NULL,
-    lastname VARCHAR,
-    firstname VARCHAR,
-    distance_m INTEGER NOT NULL
+    lastname VARCHAR NOT NULL,
+    firstname VARCHAR NOT NULL,
+    participates INTEGER NOT NULL DEFAULT 0,
+    distance_m INTEGER NOT NULL DEFAULT 0,
+    course VARCHAR NULL DEFAULT NULL,
+    CHECK (participates IN (0,2))
 );
 
 CREATE TABLE donations (
@@ -12,16 +16,18 @@ CREATE TABLE donations (
     walker_id INTEGER NOT NULL,
     donation_each_km REAL NOT NULL,
     --gesamtspende REAL DEFAULT NULL,
-    donation_amout_recived REAL DEFAULT NULL,
+    donation_amout_recived REAL NOT NULL DEFAULT 0,
     needs_donation_receipt INTEGER NOT NULL DEFAULT 0,
     donation_recived INTEGER NOT NULL DEFAULT 0,
     zipcode INTEGER DEFAULT 59494,
     city VARCHAR DEFAULT 'Soest',
     address VARCHAR,
-    firstname VARCHAR,
-    lastname VARCHAR,
+    firstname VARCHAR NOT NULL,
+    lastname VARCHAR NOT NULL,
     --spender_nr INTEGER NOT NULL,
-    FOREIGN KEY(walker_id) REFERENCES walker(rec_id)
+    CHECK (needs_donation_receipt IN (0,1)),
+    CHECK (donation_recived IN (0,1)),
+    FOREIGN KEY(walker_id) REFERENCES walkers(rec_id)
 );
 
 CREATE TABLE logins (
@@ -31,17 +37,9 @@ CREATE TABLE logins (
     stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE ttest (
-    rec_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    test VARCHAR
-);
-
 
 -- Down
-
-DROP TABLE IF EXISTS walker;
+DROP TABLE IF EXISTS walkers;
 DROP TABLE IF EXISTS donations; 
 DROP TABLE IF EXISTS logins; 
 DROP TABLE IF EXISTS ttest;
-DROP TABLE IF EXISTS `rollback_querys`;
-DROP TABLE IF EXISTS log;
