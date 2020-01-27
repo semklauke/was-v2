@@ -19,7 +19,7 @@ import { Strategy } from 'passport-local';
 import bodyParser from 'body-parser';
 
 import config from './includes/config';
-import initAuth from './includes/authentication';
+import { initAuthentication, secure } from './includes/authentication';
 
 
 // express setup
@@ -27,7 +27,10 @@ const port: number = config.port || 3000;
 let sslOptions: https.ServerOptions;
 
 const app: express.Express = express();
-app.use(express.static(path.join(__dirname, "dist")));
+app.use(express.static(path.resolve(__dirname, config.frontend_folder)));
+app.use('/static', express.static(path.resolve(__dirname, 'static')));
+app.set('view engine', 'ejs');
+
 app.use(express_session({ 
     secret: "was2020",
     saveUninitialized: false,
@@ -65,7 +68,7 @@ app.use(passport.session());
         });
 
         logger.app("Init Atúthentication with passport");
-        initAuth(passport);
+        initAuthentication(passport);
 
     } catch (err) {
         logger.error(err.toString());
@@ -76,14 +79,37 @@ app.use(passport.session());
 
 
 
+// login controller
 
+app.get('/login', function(req, res) {
+    res.sendFile(path.resolve(__dirname, config.frontend_folder, 'login.html'));
+});
 
-// login controller 
 app.post('/login', 
     passport.authenticate('local', {
         successRedirect: '/',
         failureRedirect: '/login',
-    }));
+    })
+);
+
+import { router as api_walker } from './includes/api/walker';
+app.use('/api/walker', api_walker);
+
+import { router as api_donation } from './includes/api/donation';
+app.use('/api/donation', api_donation);
+
+// post production
+import { router as post_production_class } from './includes/api/class';
+app.use('/post/class', post_production_class);
+
+import { router as post_production_class_final } from './includes/api/final';
+app.use('/post/final', post_production_class_final);
+
+// serve vue frontend
+app.get('*', function(req, res){
+    res.sendFile(path.resolve(__dirname, config.frontend_folder, 'index.html'));  
+});
+
 
 process.on('exit', () => DB().close());
 process.on('SIGHUP', () => process.exit(128 + 1));

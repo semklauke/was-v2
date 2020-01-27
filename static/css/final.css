@@ -1,0 +1,136 @@
+@charset "UTF-8";
+/* CSS Document */
+
+hr.style-one {
+	border: 0;
+    height: 1px;
+    background: #333;
+    background-image: linear-gradient(to right, #ccc, #333, #ccc);
+}
+#mainContainer {
+	
+
+}
+body {
+	margin: 0px;
+	padding: 0px;
+	font-size: 0.6em;
+}
+.g {
+	page-break-inside: avoid !important;
+}
+
+h2 {
+	text-align: center;
+}
+
+.missing {
+	color: #A00202;
+	font-size: 1.1em;
+	font-weight: 400;
+	padding-left: 15px;
+}
+
+.one-meter {
+	color: #D56318;
+}
+.one-meter > span {
+	font-style: italic;
+}
+hr.style-three {
+    border: 0;
+    border-bottom: 1px dashed #ccc;
+    background: #999;
+    margin-bottom: 6px;
+    margin-top: 6px;
+}
+.studen_container {
+	font-size: 1.7em;
+	margin-bottom: 5px;
+	margin-top: 0px !important;
+}
+.name {
+	font-size: 1.3em;
+	display: inline-block;
+	/*padding: 5px 10px 0px 0px;
+	margin-left: 21px;*/
+	vertical-align: center;
+	line-height: 25px;
+	height: 25px;
+
+}
+
+.name > span.km {
+	color: #A5A5A5;
+	font-size: 1em;
+	position: relative;
+	padding-left: 10px;
+	
+
+}
+.money {
+	
+	display: inline-block;
+	vertical-align: center;
+	line-height: 25px;
+	height: 25px;
+}
+
+.money.sum {
+	font-size: 1.4em;
+	text-align: right !important;
+	padding-right: 4px !important;
+}
+
+.money.min-sum {
+	font-size: 1.4em;
+	text-align: left;
+	padding-left: 4px !important;
+}
+
+.money.sum-dash {
+	font-size: 1em;
+	font-weight: 600;
+	
+}
+
+.money.more {
+	font-weight: 800;	
+}
+
+.spender_money {
+	
+}
+
+.spender_money.sum {
+	font-size: 1.1em;
+	text-align: right;
+	padding-right: 4px !important;
+}
+
+.spender_money.min-sum {
+	font-size: 1.1em;
+	text-align: left;
+	padding-left: 4px !important;
+}
+
+.spender_money.sum-dash {
+	font-size: 1em;
+	font-weight: 600;
+	
+}
+
+.spender_money.more {
+	font-weight: 800;	
+}
+
+.glyphicon-chevron-right {
+	position: relative;
+	left: 15px;
+	font-size: 0.8em;
+	top: 4px;
+}
+
+.summe, .summe-number {
+	font-size: 2em;
+}

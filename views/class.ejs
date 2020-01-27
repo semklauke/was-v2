@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/static/lib/bootstrap/css/bootstrap.min.css" />
+    <script type="text/javascript" src="/static/lib/bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/class.css" />
+    <title>WaS 2020 Klassen Klassen Liste</title>
+</head>
+
+<body>
+<div class="container" id="mainContainer">
+    <h2><%= class %> - Walking and Sponsoring</h2>
+    <hr class="style-one" />
+
+    <% walker.forEach(function(w) { %>
+        <div class="studen_container g">
+            <div class="row name_row g">
+                <div class="name col-xs-9 g">
+                    <%= w.getName() %> <% if (w.participates == 0) { %> <span>Nicht teilgenommen</span> <% } %>
+                    <br /><div class="_km g">
+                        <%= s.distance_m %> m
+                    </div>
+                </div>
+                <div class="money_box col-xs-3 g">
+                    <div>
+                        / <%= w.sum.toFixed(2) %> €
+                    </div>
+                </div>
+            </div>
+            <% w.donations.forEach(function(d) {%>
+                <div class="row spender_row g">
+                    <span class="glyphicon glyphicon-chevron-right col-xs-1" aria-hidden="true"></span>
+                    <span class="col-xs-9 spender_name g">
+                        <%= d.getName() %> (<%= d.donation_each_km.toFixed(2) %> €)
+                    </span>
+                    <span class="col-xs-2 spender_money g">
+                        <%= d.sum.toFixed(2) %> €
+                    </span>
+                </div>
+            <% }); %>
+        </div>
+        <hr class="style-three g" />
+    <% }); %>
+
+    <div class="studen_container g">
+        <div class="summe col-xs-6 g"> Summe </div>
+        <div class="summe-number col-xs-6"> <%= sum.toFixed(2) %> € </div>
+    </div>
+
+</div>
+</body>
+</html>

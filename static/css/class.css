@@ -1,0 +1,94 @@
+hr.style-one {
+	 border: 0;
+    height: 1px;
+    background: #333;
+    background-image: linear-gradient(to right, #ccc, #333, #ccc);
+}
+#mainContainer {
+	
+
+}
+body {
+	margin: 0px;
+	padding: 0px;
+	font-size: 0.6em;
+}
+.g {
+	page-break-inside: avoid !important;
+}
+
+h2 {
+	text-align: center;
+}
+
+hr.style-three {
+    border: 0;
+    border-bottom: 1px dashed #ccc;
+    background: #999;
+    margin-bottom: 6px;
+    margin-top: 6px;
+}
+.studen_container {
+	font-size: 1.7em;
+	margin-bottom: 5px;
+	margin-top: 0px !important;
+}
+.name {
+	font-size: 1.2em;
+	display: inline-block;
+	/*padding: 5px 10px 0px 0px;
+	margin-left: 21px;*/
+	vertical-align: center;
+	line-height: 25px;
+	height: 25px;
+
+}
+
+.name > span {
+	color: #A51717;
+	font-size: 1.25em;
+	font-weight: 400;
+	position: relative;
+	top: 2px;
+	padding-left: 20px;
+	font-style: italic;
+
+}
+.money_box {
+	display: inline-block;
+	height: 30px;
+	border: 2px solid black;
+}
+
+.money_box > div {
+	font-size: 1.3em;
+	font-weight: 200;
+	width: 100%;
+	height: 30px;
+	vertical-align: bottom;
+	line-height: 40px;
+	padding: 0px;
+
+	text-align: right;
+}
+
+.glyphicon-chevron-right {
+	position: relative;
+	left: 15px;
+	font-size: 0.8em;
+	top: 4px;
+}
+
+._km {
+	font-weight: 200;
+	font-size: 0.7em;
+	display: inline;
+	position: relative;
+	top: -20px;
+	line-height: 40px;
+
+}
+
+.summe, .summe-number {
+	font-size: 2em;
+}
