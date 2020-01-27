@@ -10,9 +10,11 @@ import path from 'path';
 import uuid from 'uuid/v1';
 import winston from 'winston';
 import { logger, dbLogger } from './../includes/logger';
-import { User, LoginRow } from './../types';
+import { User, Login } from './../types';
+import { RequestHandler } from 'express';
+import url from 'url';
 
-export default function init(pp: PassportStatic) {
+export function initAuthentication(pp: PassportStatic) {
 
     const authStrat: Strategy = new Strategy(function(
                                             username: string, 
@@ -34,7 +36,7 @@ export default function init(pp: PassportStatic) {
         try {
             let newUser: sqlite.Statement = DB().prepare("INSERT INTO logins (name, uuid) VALUES (?, ?)");
             let result: sqlite.RunResult = newUser.run(user.name, user.uuid);
-            logger.app("User %s logged in with uuid %s", user.name, user.uuid);
+            logger.info("User %s logged in with uuid %s", user.name, user.uuid);
             user.id = <number> result.lastInsertRowid;
             dbLogger.log({
                 level: 'app',
@@ -75,7 +77,7 @@ export default function init(pp: PassportStatic) {
         let e: Error | null = null;
 
         try {
-            let result: LoginRow | undefined = DB().prepare("SELECT * FROM logins WHERE rec_id = ?").get(id); 
+            let result: Login | undefined = DB().prepare("SELECT * FROM logins WHERE rec_id = ?").get(id); 
             if (!result) {
                 logger.error("passport.deserializeUser no user for id %d", id);
                 e = new Error("passport.deserializeUser no user for id");
@@ -95,4 +97,17 @@ export default function init(pp: PassportStatic) {
         }
     });
 
+}
+
+export let secure: RequestHandler = function(req, res, next)  {
+    if (req.isAuthenticated()) {
+        next();
+    } else {
+        res.redirect(url.format({
+            pathname: "/login",
+            query: {
+                info: 'l'
+            }
+        }));
+    }
 }

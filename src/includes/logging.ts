@@ -20,8 +20,8 @@ const color_settigs: ColorizeOptions =  {
         error : 'red',
         warn : 'yellow',
         info : 'blue',
-        http : 'magenta',
         app : 'green',
+        http : 'magenta',
         debug : 'white'
     },
     all : true
@@ -31,8 +31,8 @@ const level_settings: winstonConfigTypes.AbstractConfigSetLevels = {
     error: 0,
     warn: 1,
     info: 2,
-    http: 3,
-    app: 4,
+    app: 3,
+    http: 4,
     debug: 5
 }
 
@@ -101,7 +101,7 @@ winston.loggers.add('db', {
             level: 'debug',
             db: path.join(__dirname, '..', config.db),
             params: ['type', 'message', 'user', 'rb', 'error'],
-            table_name: 'rb',
+            table_name: 'rbs',
             id_column_name: 'rec_id'    
         }),
         new winston.transports.File({

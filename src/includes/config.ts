@@ -20,5 +20,8 @@ export default {
     },
 
     // password for the front end side. pls change this
-    "password" : "abcd"
+    "password" : "abcd",
+
+    // build outputr folder for the vue frontend, relative to the project root
+    "frontend_folder" : "dist"
 };
