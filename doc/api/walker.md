@@ -20,7 +20,7 @@
 * Content-Type: `application/json`
 * Code: `200 OK`
 * Body:
-```json
+```typescript
 {
   success: "Success",
   walker: Walker[]
@@ -37,7 +37,7 @@
 * Content-Type: `application/json`
 * Code: `200 OK`
 * Body:
-```json
+```typescript
 {
   success: "Success",
   walker: Walker[]
@@ -49,7 +49,7 @@
 * Content-Type: `application/x-www-form-urlencoded`
 * query: none
 * body:
-```json 
+```typescript 
 username: "Hans Peter"
 password: <password specified in /src/includes/config.ts>
 ```

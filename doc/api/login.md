@@ -13,7 +13,7 @@
 * Content-Type: `application/x-www-form-urlencoded`
 * query: none
 * body:
-```json 
+```typescript 
 username: "Hans Peter"
 password: <password specified in /src/includes/config.ts>
 ```

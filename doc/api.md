@@ -30,14 +30,14 @@ Or use the very helpful sqlite command line untilies to look into the schema of 
 
 For `POST`, `PUT`, `DELETE` requests you (should 😅) always get a json response back  
 On succes:
-```json
+```typescript
 {
   success: "Success",
   rec_id: <id of the object created/updated/deleted>
 }
 ```  
 On Error:
-```json
+```typescript
 {
   error: <error message>,
   errorid: <errorid, see list of errorids>
