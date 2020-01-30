@@ -1,11 +1,11 @@
 # `/api/donation` Endpoint
 
 &emsp;[<= Back](../api.md)  
-* [GET `/api/donation `](#get-api donation)
+* [GET `/api/donation`](#get-apidonation)
 * [GET `/api/donation/<donation_id>`](#get-apidonationdonation_id)
 * [PUT `/api/donation/<donation_id>`](#put-apidonationdonation_id)
 * [DELETE `/api/donation/<donation_id>`](#delete-apidonationdonation_id)
-* [POST `/api/donation `](#post-api donation)
+* [POST `/api/donation`](#post-apidonation)
 * [POST `/api/donation/walker/<walker_id>`](#post-apidonationwalkerwalker_id)
 * [GET `/api/donation/walker/<walker_id>`](#get-apidonationwalkerwalker_id)
 * [DELETE `/api/donation/walker/<walker_id>`](#delete-apidonationwalkerwalker_id)
