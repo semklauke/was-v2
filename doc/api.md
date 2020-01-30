@@ -7,7 +7,7 @@
 
 ## API Endpoints (Secured)
 
-### - `/api/walker` [[api/walker.md](api/waker.md)]
+### - `/api/walker` [[api/walker.md](api/walker.md)]
 ### - `/api/donation` [[api/donation.md](api/donation.md)]
 
 ## Post Processing/API Endpoints (Secured)

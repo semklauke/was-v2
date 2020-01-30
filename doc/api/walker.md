@@ -1,5 +1,12 @@
 # `/api/walker` Endpoint
 
+&emsp;[<= Back](../api.md)  
+* [GET `/api/walker`](#get-apiwalker)
+* [POST `/api/walker`](#post-apiwalker)
+* [GET `/api/walker/<walker_id>`](#get-apiwalkerwalker_id)
+* [PUT `/api/walker/<walker_id>`](#put-apiwalkerwalker_id)
+* [DELETE `/api/walker/<walker_id>`](#delete-apiwalkerwalker_id)
+
 ## Walker Object
 JSON Object/Database entry that describes a walker. Refered in this document as *Walker*
 ```typescript 
@@ -9,7 +16,7 @@ interface Walker {
   distance_m: number,
   lastname: string,
   firstname: string,
-  participates: number (0,1,2)
+  participates: number //(0,1,2)
 }
 ```
 
@@ -21,8 +28,8 @@ interface Donation {
   walker_id: number,
   donation_each_km: number,
   donation_amout_recived: number,
-  needs_donation_receipt: number (0,1),
-  donation_recived: number (0,1),
+  needs_donation_receipt: number, //(0,1)
+  donation_recived: number, //(0,1)
   zipcode?: number,
   city?: string,
   adrdess?: string,
@@ -30,6 +37,8 @@ interface Donation {
   lastname: string
 }
 ```
+
+
 
 ## GET `/api/walker/`
 Get all Walker objects in the database
