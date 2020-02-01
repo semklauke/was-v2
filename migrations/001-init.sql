@@ -5,10 +5,10 @@ CREATE TABLE walkers (
     class VARCHAR NOT NULL,
     lastname VARCHAR NOT NULL,
     firstname VARCHAR NOT NULL,
-    participates INTEGER NOT NULL DEFAULT 0,
+    participates INTEGER NOT NULL DEFAULT 1,
     distance_m INTEGER NOT NULL DEFAULT 0,
     course VARCHAR NULL DEFAULT NULL,
-    CHECK (participates IN (0,2))
+    CHECK (participates IN (0,1,2))
 );
 
 CREATE TABLE donations (
