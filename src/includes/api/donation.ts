@@ -6,14 +6,17 @@ import express from 'express';
 import { secure } from './../authentication';
 import sqlite from 'better-sqlite3';
 import DB from 'better-sqlite3-helper';
+import socketio from 'socket.io';
 import bodyParser from 'body-parser';
 import { logger, dbLogger } from './../logger';
 import { Walker, Donation, SQL, WalkerTransfer } from './../../types'
 
-// init router
-export const router: express.Router = express.Router();
-
 // sql querys
+
+const sql_donation: SQL = `
+    SELECT * FROM donations WHERE rec_id = ?;
+`;
+
 const sql_donation_all: SQL = `
     SELECT * FROM donations;
 `;
@@ -32,7 +35,13 @@ const sql_walker: SQL = `
    SELECT rec_id, firstname, lastname FROM walkers WHERE rec_id = ?
 `;
 
-router.get('/', secure, function(req, res){
+// init router
+export function router(io: socketio.Server) : express.Router {
+
+const r: express.Router = express.Router();
+
+
+r.get('/', secure, function(req, res){
 
     logger.http('GET api.donation /');
     /*//@ts-ignore
@@ -40,18 +49,18 @@ router.get('/', secure, function(req, res){
 
     let stmt = DB().prepare(sql_donation_all);
     let donations: Donation[] = stmt.all();
-    res.json({ success: "success", donations });
+    res.status(200).json({ success: "Success", donations });
 
 });
 
-router.post('/', secure, bodyParser.json(), function(req, res){
+r.post('/', secure, bodyParser.json(), function(req, res){
 
     // donation insert
     logger.http("POST api.donation /",);
 
     if (!req.body.donation || req.body.donation == {}) {
         logger.warn("POST api.donation / Donation object missing in request");
-        res.json({ error: 'add Donation needs a Donation object in the request data', errorid: 203 });
+        res.status(400).json({ error: 'add Donation needs a Donation object in the request data', errorid: 203 });
         return;
     }
 
@@ -61,13 +70,13 @@ router.post('/', secure, bodyParser.json(), function(req, res){
     //@ts-ignore
     if (!d.walker_id || d.walker_id === undefined || d.walker_id == '') {
         logger.warn("POST api.donation / Walker id of Donation object missing in request");
-        res.json({ error: 'add Donation needs a Walker id in the request data', errorid: 207 });
+        res.status(400).json({ error: 'add Donation needs a Walker id in the request data', errorid: 207 });
         return;
     }
     let walker: Walker | undefined = DB().queryFirstRow(sql_walker, d.walker_id);
     if (walker == undefined) {
         logger.warn("POST api.donation / No such walker id exists: (%d)", d.walker_id);
-        res.json({ error: 'The Walker id '+d.walker_id+' does not exist', errorid: 208 });
+        res.status(404).json({ error: 'The Walker id '+d.walker_id+' does not exist', errorid: 208 });
         return;
     }
 
@@ -82,17 +91,17 @@ router.post('/', secure, bodyParser.json(), function(req, res){
         req.user.name
     );   
 
-    res.json({ success: "Donation added", rec_id: donation_id });
+    res.status(200).json({ success: "Donation added", rec_id: donation_id });
 });
 
-router.post('/walker/:walker_id', secure, bodyParser.json(), function(req, res){
+r.post('/walker/:walker_id', secure, bodyParser.json(), function(req, res){
 
     let walker_id: number = parseInt(req.params.walker_id);
     logger.http("POST api.donation /walker/%d (:walker_id)", walker_id);
 
     if (!req.body.donation || req.body.donation == {}) {
         logger.warn("POST api.donation /walker/%d (:walker_id) Donation object missing in request", walker_id);
-        res.json({ error: 'add Donation needs a Donation object in the request data', errorid: 209 });
+        res.status(400).json({ error: 'add Donation needs a Donation object in the request data', errorid: 209 });
         return;
     }
 
@@ -102,7 +111,7 @@ router.post('/walker/:walker_id', secure, bodyParser.json(), function(req, res){
     let walker: Walker | undefined = DB().queryFirstRow(sql_walker, walker_id);
     if (walker == undefined) {
         logger.warn("POST api.donation /walker/%d (:walker_id) No such walker id exists", walker_id);
-        res.json({ error: 'The Walker id '+walker_id+' does not exist', errorid: 210 });
+        res.status(404).json({ error: 'The Walker id '+walker_id+' does not exist', errorid: 210 });
         return;
     }
 
@@ -117,11 +126,11 @@ router.post('/walker/:walker_id', secure, bodyParser.json(), function(req, res){
         req.user.name
     );   
 
-    res.json({ success: "Donation added", rec_id: donation_id });
+    res.status(200).json({ success: "Donation added", rec_id: donation_id });
 });
 
 
-router.get('/walker/:walker_id', secure, function(req, res){
+r.get('/walker/:walker_id', secure, function(req, res){
     
     let walker_id: number = parseInt(req.params.walker_id);
     logger.http("GET api.donation /walker/%d (:walker_id)", walker_id);
@@ -132,14 +141,32 @@ router.get('/walker/:walker_id', secure, function(req, res){
     let d = DB().query<Donation>(sql_donation_for_walker, walker_id);
     if (!d || !d.length || d.length == 0) {
         logger.warn("GET api.donation /walker/%d No such Walker id", walker_id);
-        res.json({ error: 'Walker id '+walker_id+' does not exist', errorid: 201 });
+        res.status(404).json({ error: 'Walker id '+walker_id+' does not exist', errorid: 201 });
         return;
     }
-    res.json({ success: "sucess", donations: d });
+    res.status(200).json({ success: "Success", donations: d });
 
 });
 
-router.delete('/walker/:walker_id', secure, function(req, res){
+r.get('/:donation_id', secure, function(req, res){
+    
+    let donation_id: number = parseInt(req.params.donation_id);
+    logger.http("GET api.donation /%d (:donation_id)", donation_id);
+
+    /*//@ts-ignore
+    logger.debug("Donations of Walker (%d) selected by %s", walker_id, req.user.name);*/
+    
+    let d = DB().queryFirstRow<Donation>(sql_donation, donation_id);
+    if (!d) {
+        logger.warn("GET api.donation /%d (:donation_id) No such Donation id", donation_id);
+        res.status(404).json({ error: 'Donation id '+donation_id+' does not exist', errorid: 211 });
+        return;
+    }
+    res.status(200).json({ success: "Success", donation: d });
+
+});
+
+r.delete('/walker/:walker_id', secure, function(req, res){
     
     let walker_id: number = parseInt(req.params.walker_id);
     logger.http("DELETE api.donation /walker/%d (:walker_id)", walker_id);
@@ -150,14 +177,14 @@ router.delete('/walker/:walker_id', secure, function(req, res){
     if (deletions > 0) {
         //@ts-ignore
         logger.info("%d Donations of Walker (%d) delete by %s", deletions, walker_id, req.user.name);
-        res.json({ success: "Donations deleted", rec_id: walker_id });
+        res.status(200).json({ success: "Donations deleted", rec_id: walker_id });
     } else {
         logger.warn("DELETE api.donation /walker/%d (:walker?id) No such Walker id", walker_id);
-        res.json({ error: 'Walker id '+walker_id+' does not exist', errorid: 206 });
+        res.status(404).json({ error: 'Walker id '+walker_id+' does not exist', errorid: 206 });
     }
 });
 
-router.put('/:donation_id', secure, bodyParser.json(), function(req, res){
+r.put('/:donation_id', secure, bodyParser.json(), function(req, res){
 
     let donation_id: number = parseInt(req.params.donation_id);
     logger.http("PUT api.donation /%d (:donation_id)", donation_id);
@@ -167,15 +194,15 @@ router.put('/:donation_id', secure, bodyParser.json(), function(req, res){
         DB().updateWithBlackList('donations', d, { rec_id: donation_id }, ['rec_id']);
         //@ts-ignore
         logger.info('Donation (%d) updated by %s', donation_id, req.user.name);
-        res.json({ success: "Donation updated", rec_id: donation_id });
+        res.status(201).json({ success: "Donation updated", rec_id: donation_id });
     } else {
         logger.warn("PUT api.donation /%d (:donation_id) No such Donation id", donation_id);
-        res.json({ error: 'Donation id '+donation_id+' does not exist', errorid: 202 });
+        res.status(404).json({ error: 'Donation id '+donation_id+' does not exist', errorid: 202 });
     }
 
 });
 
-router.delete('/:donation_id', secure, function(req, res){
+r.delete('/:donation_id', secure, function(req, res){
 
     let donation_id: number = parseInt(req.params.donation_id);
     logger.http("DELETE api.donation /%d (:donation_id)", donation_id);
@@ -189,6 +216,10 @@ router.delete('/:donation_id', secure, function(req, res){
         res.json({ success: "Donation deleted", rec_id: donation_id });
     } else {
         logger.warn("DELETE api.donation /%d (:donation_id) No such Donation id", donation_id);
-        res.json({ error: 'Donation id '+donation_id+' does not exist', errorid: 205 });
+        res.status(404).json({ error: 'Donation id '+donation_id+' does not exist', errorid: 205 });
     }
 });
+
+return r;
+
+}

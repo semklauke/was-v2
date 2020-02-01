@@ -3,13 +3,13 @@
 /// <reference types="better-sqlite3"/>
 
 import express from 'express';
-import { secure } from './../authentication';
+import { secure, secureFrontend } from './../authentication';
 import sqlite from 'better-sqlite3';
 import DB from 'better-sqlite3-helper';
 import bodyParser from 'body-parser';
 import { logger, dbLogger } from './../logger';
-import { Walker, Donation, SQL, ClassRender, WalkerRender, DonationRender, Course } from './../../types';
-import { round, courseToString, getNameFunction } from './../helper';
+import { Walker, Donation, SQL, ClassRender, WalkerRender, DonationRender } from './../../types';
+import { round, courseToString, getNameFunction, Course } from './../helper';
 
 // init router
 export const router: express.Router = express.Router();
@@ -30,9 +30,9 @@ const sql_walker_for_class_for_course: SQL = `
 
 // routes
 
-router.get('/:class_ident', secure, function(req, res) {
+router.get('/:class_ident', secureFrontend, function(req, res) {
 
-    let class_ident: string = req.params.class_ident
+    let class_ident: string = req.params.class_ident.toUpperCase();
     logger.http('GET api.final /%s (:class_ident)', class_ident);
 
     let data: ClassRender = {
@@ -83,10 +83,10 @@ router.get('/:class_ident', secure, function(req, res) {
     res.render('final', data);
 });
 
-router.get('/:class_ident/:course', secure, function(req, res) {
+router.get('/:class_ident/:course', secureFrontend, function(req, res) {
 
-    let class_ident: string = req.params.class_ident;
-    let course: string = req.params.course;
+    let class_ident: string = req.params.class_ident.toUpperCase();
+    let course: string = req.params.course.toUpperCase();
     logger.http('GET api.final /%s/%s (:class_ident/:course)', class_ident, course);
 
     let class_title: string = class_ident+" ("+courseToString(course)+")";

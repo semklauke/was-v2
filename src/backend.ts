@@ -12,6 +12,7 @@ import winston from 'winston';
 import path from 'path';
 import https from 'https';
 import fs from 'fs';
+import socketio from 'socket.io';
 
 import passport from 'passport';
 import express_session from 'express-session';
@@ -19,14 +20,17 @@ import { Strategy } from 'passport-local';
 import bodyParser from 'body-parser';
 
 import config from './includes/config';
-import { initAuthentication, secure } from './includes/authentication';
+import { initAuthentication, secure, secureFrontend } from './includes/authentication';
 
+// important globals
+const app: express.Express = express();
+let server: https.Server;
+let io: socketio.Server;
 
 // express setup
 const port: number = config.port || 3000;
 let sslOptions: https.ServerOptions;
 
-const app: express.Express = express();
 app.use(express.static(path.resolve(__dirname, config.frontend_folder)));
 app.use('/static', express.static(path.resolve(__dirname, 'static')));
 app.set('view engine', 'ejs');
@@ -41,41 +45,42 @@ app.use(passport.session());
 
 
 // db setup + express start
-( async () => {
-    try {
-        const migrationForce: boolean = true;
-        logger.app('Open SQLite database at %s', config.db);
-        DB({
-            path: path.join(__dirname, config.db),
-            migrate: {
-                force: 'last',
-                table: 'migration',
-                migrationsPath: path.join(__dirname, 'migrations')
-            }
-        });
-        DB().defaultSafeIntegers(false);       
-        logger.app('Migrating database. force=%s', migrationForce);
-        
-        logger.app('Reading ssl key and cert from ', config.ssl);
-        let key = await fs.promises.readFile(config.ssl.key);
-        let cert = await fs.promises.readFile(config.ssl.cert);
-        sslOptions = { key, cert };
+try {
+    const migrationForce: boolean = true;
+    logger.app('Open SQLite database at %s', config.db);
+    DB({
+        path: path.join(__dirname, config.db),
+        migrate: {
+            force: 'last',
+            table: 'migration',
+            migrationsPath: path.join(__dirname, 'migrations')
+        }
+    });
+    DB().defaultSafeIntegers(false);       
+    logger.app('Migrating database. force=%s', migrationForce);
 
-        logger.app('Starting node https server');
-        https.createServer(sslOptions, app).listen({ port }, () => {
-            logger.app('-------- SERVER IS RUNNING --------');
-            logger.app('at: https://localhost:%d', port);
-        });
+    logger.app('Reading ssl key and cert from ', config.ssl);
+    let key = fs.readFileSync(config.ssl.key);
+    let cert = fs.readFileSync(config.ssl.cert);
+    sslOptions = { key, cert };
 
-        logger.app("Init Atúthentication with passport");
+    logger.app('Starting node https server');
+    server = https.createServer(sslOptions, app).listen({ port }, () => {
+        logger.app('-------- SERVER IS RUNNING --------');
+        logger.app('at: https://localhost:%d', port);
+    });
+
+    logger.app("Init Authentication with passport");
         initAuthentication(passport);
 
-    } catch (err) {
-        logger.error(err.toString());
-        process.exit(1);
-    }
-    
-})();
+    logger.app("Start Socket.IO websocket server");
+    io = socketio(server);
+    io.on('connection', initSocket);
+
+} catch (err) {
+    logger.error(err.toString());
+    process.exit(1);
+}
 
 
 
@@ -93,10 +98,10 @@ app.post('/login',
 );
 
 import { router as api_walker } from './includes/api/walker';
-app.use('/api/walker', api_walker);
+app.use('/api/walker', api_walker(io));
 
 import { router as api_donation } from './includes/api/donation';
-app.use('/api/donation', api_donation);
+app.use('/api/donation', api_donation(io));
 
 // post production
 import { router as post_production_class } from './includes/api/class';
@@ -105,10 +110,46 @@ app.use('/post/class', post_production_class);
 import { router as post_production_class_final } from './includes/api/final';
 app.use('/post/final', post_production_class_final);
 
+import { router as post_production_form } from './includes/api/form';
+app.use('/post/form', post_production_form);
+
 // serve vue frontend
-app.get('*', function(req, res){
+app.get('*', secureFrontend, function(req, res){
     res.sendFile(path.resolve(__dirname, config.frontend_folder, 'index.html'));  
 });
+
+// socket io stuff
+let CONNECTIONS: number = 0;
+let CURRENT_LOCKS: { [key: string] : any } = {};
+function initSocket(socket: socketio.Socket) : void {
+    CONNECTIONS++;
+
+    io.emit('user_count_changed', CONNECTIONS);
+    const address: string = socket.handshake.headers["x-forwarded-for"].split(",")[0];
+    logger.info("User connected from %s", address);
+
+    socket.on("walker_lock", function(data) {
+        socket.broadcast.emit("walker_lock", data);
+        CURRENT_LOCKS[socket.id] = data;
+    });
+
+    socket.on('walker_unlock', function(data){
+      socket.broadcast.emit('walker_unlock', data);
+      delete CURRENT_LOCKS[socket.id];
+    });
+
+    socket.on('disconnect', function(){
+        if (CURRENT_LOCKS[socket.id] != undefined) {
+            socket.broadcast.emit("walker_unlock", parseInt(CURRENT_LOCKS[socket.id]));
+            delete CURRENT_LOCKS[socket.id];
+        }
+
+        CONNECTIONS--;
+        io.emit('user_count_changed', CONNECTIONS);
+
+    });
+
+}
 
 
 process.on('exit', () => DB().close());

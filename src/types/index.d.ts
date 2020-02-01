@@ -69,11 +69,4 @@ interface ClassRender {
     minsum?: number
 }
 
-export enum Course {
-    DE = "DE", // Deutsch
-    MA = "MA", // Mathe
-    EN = "EN", // Englisch
-    PA = "PA" // Paedagogik
-}
-
 type SQL = string;

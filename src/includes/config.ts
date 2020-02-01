@@ -23,5 +23,12 @@ export default {
     "password" : "abcd",
 
     // build outputr folder for the vue frontend, relative to the project root
-    "frontend_folder" : "dist"
+    "frontend_folder" : "dist",
+
+    // default pay date printet on the donation receipt
+    "pay_date" : "01.09.2020",
+
+    // default print date printet on the donation receipt
+    // null means the current date of the access  
+    "print_date" : null
 };

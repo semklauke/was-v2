@@ -1,17 +1,16 @@
 // -- walker api route --
 
 /// <reference types="better-sqlite3"/>
+/// <reference types="socket.io"/>
 
 import express from 'express';
 import { secure } from './../authentication';
 import sqlite from 'better-sqlite3';
 import DB from 'better-sqlite3-helper';
 import bodyParser from 'body-parser';
+import socketio from 'socket.io';
 import { logger, dbLogger } from './../logger';
 import { Walker, Donation, SQL, WalkerTransfer } from './../../types'
-
-// init router
-export const router: express.Router = express.Router();
 
 // sql querys
 const sql_walkerAll: SQL = `
@@ -42,7 +41,13 @@ const sql_delete_donations_walker: SQL = `
     DELETE FROM donations WHERE walker_id = ?
 `;
 
-router.get('/', secure, function(req, res){
+
+// init router
+export function router(io: socketio.Server) : express.Router {
+
+const r: express.Router = express.Router();
+
+r.get('/', secure, function(req, res){
 
     logger.http('GET api.walker /');
     /*//@ts-ignore
@@ -50,18 +55,18 @@ router.get('/', secure, function(req, res){
 
     let stmt = DB().prepare(sql_walkerAll);
     let walker: Walker[] = stmt.all();
-    res.json({ success: "success", walker });
+    res.status(200).json({ success: "success", walker });
 
 });
 
-router.post('/', secure, bodyParser.json(), function(req, res){
+r.post('/', secure, bodyParser.json(), function(req, res){
 
     // walker insert
     logger.http("POST api.walker /",);
 
     if (!req.body.walker || req.body.walker == {}) {
         logger.warn("POST api.walker / Walker object missing in request");
-        res.json({ error: 'add Walker needs a Walker object in the request data', errorid: 103 });
+        res.status(400).json({ error: 'add Walker needs a Walker object in the request data', errorid: 103 });
         return;
     }
 
@@ -77,7 +82,7 @@ router.post('/', secure, bodyParser.json(), function(req, res){
                 //@ts-ignore
                 req.user.name
             );
-            res.json({ error: 'duplicate Walker detected. Please confirm.', errorid: 104, duplicate: true });
+            res.status(409).json({ error: 'duplicate Walker detected. Please confirm.', errorid: 104, duplicate: true });
             return;
         }
     }
@@ -102,11 +107,13 @@ router.post('/', secure, bodyParser.json(), function(req, res){
             );
         });
     }
+    w.rec_id = walker_id;
+    io.emit("walker_added", w);
+    res.status(200).json({ success: "Walker added", rec_id: walker_id });
 
-    res.json({ success: "Walker added", rec_id: walker_id });
 });
 
-router.get('/:walker_id', secure, function(req, res){
+r.get('/:walker_id', secure, function(req, res){
     
     let walker_id: number = parseInt(req.params.walker_id);
     logger.http("GET api.walker /%d (:walker_id)", walker_id);
@@ -116,7 +123,7 @@ router.get('/:walker_id', secure, function(req, res){
     let w = DB().queryFirstRow<Walker>(sql_walker, walker_id);
     if (!w) {
         logger.warn("GET api.walker /%d No such Walker id", walker_id);
-        res.json({ error: 'Walker id '+walker_id+' does not exist', errorid: 101 });
+        res.status(404).json({ error: 'Walker id '+walker_id+' does not exist', errorid: 101 });
         return;
     }
     //@ts-ignore
@@ -128,14 +135,14 @@ router.get('/:walker_id', secure, function(req, res){
             walker : w,
             donations : d,
         }
-        res.json(data);
+        res.status(200).json(data);
     } else {
-        res.json({ success: "success", walker: w });
+        res.status(200).json({ success: "success", walker: w });
     }
 
 });
 
-router.put('/:walker_id', secure, bodyParser.json(), function(req, res){
+r.put('/:walker_id', secure, bodyParser.json(), function(req, res){
 
     let walker_id: number = parseInt(req.params.walker_id);
     logger.http("PUT api.walker /%d (:walker_id)", walker_id);
@@ -144,6 +151,9 @@ router.put('/:walker_id', secure, bodyParser.json(), function(req, res){
         DB().updateWithBlackList('walkers', req.body.walker, { rec_id: walker_id }, ['rec_id']);
         //@ts-ignore
         logger.info("Walker (%d) updated by %s", walker_id, req.user.name);
+    } else {
+        res.status(400).json({ error: 'PUT Walker needs a Walker object in the request data', errorid: 113 });
+        logger.warn("PUT api.walker /%d (:walker_id) No walker object in request", walker_id);
     }
     
     if (req.body.donations && req.body.donations.length > 0) {
@@ -152,7 +162,7 @@ router.put('/:walker_id', secure, bodyParser.json(), function(req, res){
             if (!value.rec_id) {
                 logger.warn("PUT api.walker /%d (:walker_id) No rec_id for Donation", walker_id);
                 req.body.donations = [];
-                res.json({ error: 'Donation has no rec_id', errorid: 102 });
+                res.status(400).json({ error: 'Donation has no rec_id', errorid: 102 });
                 return;
             } else {
                 DB().updateWithBlackList('donations', value, { rec_id: value.rec_id }, ['rec_id']);
@@ -162,11 +172,11 @@ router.put('/:walker_id', secure, bodyParser.json(), function(req, res){
         });
     }
 
-    res.json({ success: "Walker updated", rec_id: walker_id });
+    res.status(201).json({ success: "Walker updated", rec_id: walker_id });
 
 });
 
-router.delete('/:walker_id', secure, function(req, res){
+r.delete('/:walker_id', secure, function(req, res){
 
     let walker_id: number = parseInt(req.params.walker_id);
     logger.http("DELETE api.walker /%d (:walker_id)", walker_id);
@@ -175,7 +185,7 @@ router.delete('/:walker_id', secure, function(req, res){
     let w = DB().queryFirstRow<Walker>(sql_walker, walker_id);
     if (!w) {
         logger.warn("DELETE api.walker /%d No such Walker id", walker_id);
-        res.json({ error: 'Walker id '+walker_id+' does not exist', errorid: 105 });
+        res.status(404).json({ error: 'Walker id '+walker_id+' does not exist', errorid: 105 });
         return;
     }
 
@@ -193,6 +203,10 @@ router.delete('/:walker_id', secure, function(req, res){
             req.user.name
         );
     }
-
-    res.json({ success: "Walker deleted", rec_id: walker_id });
+    io.emit("walker_deleted", walker_id);
+    res.status(200).json({ success: "Walker deleted", rec_id: walker_id });
 });
+
+return r;
+
+}

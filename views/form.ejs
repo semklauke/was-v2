@@ -1,0 +1,147 @@
+<!DOCTYPE html >
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="/static/lib/bootstrap/css/bootstrap.min.css" />  
+    <link rel="stylesheet" type="text/css" href="/static/css/form.css" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta charset="utf-8" />
+<style id="fonts1" type="text/css" >
+
+@font-face {
+    font-family: Wingdings-Regular_1b;
+    src: url("/static/fonts/Wingdings-Regular_1b.woff") format("woff");
+}
+
+@font-face {
+    font-family: ArialMT_g;
+    src: url("/static/fonts/ArialMT_g.woff") format("woff");
+}
+
+@font-face {
+    font-family: Arial-BoldMT_-;
+    src: url("/static/fonts/Arial-BoldMT_-.woff") format("woff");
+}
+
+@font-face {
+    font-family: Arial-ItalicMT_q;
+    src: url("/static/fonts/Arial-ItalicMT_q.woff") format("woff");
+}
+
+@font-face {
+    font-family: TimesNewRomanPSMT_18;
+    src: url("/static/fonts/TimesNewRomanPSMT_18.woff") format("woff");
+}
+
+.s8_1{
+    FONT-SIZE: 48.9px;
+    FONT-FAMILY: ArialMT_g;
+    color: rgba(255, 255, 255, 0);
+}
+
+.s4_1{
+    FONT-SIZE: 73.3px;
+    FONT-FAMILY: Arial-BoldMT_-;
+    color: rgba(255, 255, 255, 0);
+}
+
+.s7_1{
+    FONT-SIZE: 67.2px;
+    FONT-FAMILY: Wingdings-Regular_1b;
+    color: rgba(255, 255, 255, 0);
+}
+
+.s6_1{
+    FONT-SIZE: 67.2px;
+    FONT-FAMILY: TimesNewRomanPSMT_18;
+    color: rgba(255, 255, 255, 0);
+}
+
+.s3_1{
+    FONT-SIZE: 61.1px;
+    FONT-FAMILY: Arial-ItalicMT_q;
+    color: rgba(255, 255, 255, 0);
+}
+
+.s5_1{
+    FONT-FAMILY: ArialMT_g;
+    
+}
+
+.s9_1{
+    FONT-SIZE: 61.1px;
+    FONT-FAMILY: Arial-BoldMT_-;
+    color: rgba(255, 255, 255, 0);
+}
+
+.s2_1{
+    FONT-SIZE: 61.1px;
+    FONT-FAMILY: ArialMT_g;
+    color: rgba(255, 255, 255, 0);
+}
+
+.s1_1{
+    FONT-SIZE: 85.6px;
+    FONT-FAMILY: ArialMT_g;
+    color: rgba(255, 255, 255, 0);
+}
+
+</style>
+</head>
+
+<body style="margin: 0;">
+
+<div id="front_page">
+    <h1><%= titel %></h1>
+    <% walker.forEach(function(w){ %>
+        <div class="l-name">
+            <%= w.name %>
+        </div>
+        <div class="sp-box">
+        <% w.donations.forEach(function(d){ %>
+            <div class="sp-name">
+                <%= d.name %>(<%= d.sum %>)
+            </div>
+        <% }); %>
+        </div>
+
+    <% }); %>
+
+</div>
+
+
+<% forms.forEach(function(f){ %>
+    <iframe scrolling="no" src="/static/donation_recived/spenden_form.html" width="909px" height="1286px" frameborder="0"></iframe>
+    <div class="frame_content">
+        <div class="name_and_adress">
+            <%= f.name %>, <%= f.address %>
+        </div>
+        <div class="money">
+            <%= f.money.toString().replace(".", ",") %> €
+        </div>
+        <div class="money_in_words">
+            <%= f.moneyWord %>
+        </div>
+        <div class="zuwendung">
+            <%= f.payDate %>
+        </div>
+        <div class="printdate s5_1">
+            <%= f.printDate %> i.A.
+        </div>
+    </div>
+<% }); %>
+<!-- End page background -->
+
+<!--[if lt IE 9]><script type="text/javascript">
+(function(divCount, pageNum) {
+for (var i = 1; i < divCount; i++) {
+    var div = document.getElementById('t' + i.toString(36) + '_' + pageNum);
+    if (div !== null) {
+        div.style.display = 'none';
+    }
+}
+})(48, 1);
+</script><![endif]-->
+
+</div>
+</body>
+</html>

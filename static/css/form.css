@@ -1,0 +1,109 @@
+@charset "UTF-8";
+/* CSS Document */
+
+
+iframe {
+	-webkit-transform-origin: left top;
+	transform-origin: left top;
+	-webkit-transform: scale(1.2);
+	transform: scale(1.2);
+	
+}
+
+.frame_content {
+	-webkit-transform-origin: left top;
+	transform-origin: left top;
+	width: 909px;
+	height: 1286px;
+	margin-top: -1286px;
+	background-color: rgba(0,0,0,0);
+	z-index: 200;
+	-webkit-transform: scale(1.2);
+	transform: scale(1.2);
+
+
+
+}
+.frame_content  div {
+	position: relative;
+}
+
+.name_and_adress {
+	right: 110px;
+	top: 443px;
+	word-spacing:0.2px;
+	font-size: 18px;
+	text-align: right;
+
+}
+
+.money {
+	left: 188px;
+	top: 484px;
+	word-spacing:0.1px;
+	font-size: 18px;
+}
+
+.money_in_words {
+	left: 300px;
+	top: 463px;
+	word-spacing: 0.1px;
+}
+
+.zuwendung {
+	top: 434px;
+	left: 628px;
+	font-size: 25px;
+}
+
+.printdate {
+	font-size: 16px;
+	left: 181px;
+	top: 842px;
+	word-spacing: -0.3px;
+
+}
+
+#front_page {
+	width: 909px;
+	height: 1286px;
+	margin: 0px;
+	padding: 0px;
+	padding-left: 30px;
+}
+
+h1 {
+	text-align: center;
+	font-family: Lato, Arial;
+
+}
+
+.l-name {
+	font-family: Lato, Arial;
+	font-size: 1.2em;
+}
+
+.l-name:before {
+	font-family: Lato, Arial;
+	content: ">";
+	padding-right: 10px;
+	font-size: 1.3em;
+	font-weight: 500;
+	font-style: bold;
+}
+
+.sp-box {
+	margin-left: 20px;
+	font-size: 1.2em;
+
+
+}
+
+.sp-name {
+	padding: 1px 0px 1px 7px;
+}
+
+
+.sp-name:before {
+	content: "* ";
+}

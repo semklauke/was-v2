@@ -103,7 +103,15 @@ export let secure: RequestHandler = function(req, res, next)  {
     if (req.isAuthenticated()) {
         next();
     } else {
-        res.redirect(url.format({
+        res.status(401).json({ error: "Not logged in", errorid: 3 });
+    }
+}
+
+export let secureFrontend: RequestHandler = function(req, res, next)  {
+    if (req.isAuthenticated()) {
+        next();
+    } else {
+        res.redirect(303, url.format({
             pathname: "/login",
             query: {
                 info: 'l'
