@@ -28,7 +28,7 @@ interface Donation {
     donation_recived: number,
     zipcode?: number,
     city?: string,
-    adrdess?: string,
+    address?: string,
     firstname: string,
     lastname: string
 }
