@@ -13,6 +13,7 @@ import path from 'path';
 import https from 'https';
 import fs from 'fs';
 import socketio from 'socket.io';
+import url from 'url';
 
 import passport from 'passport';
 import express_session from 'express-session';
@@ -31,7 +32,7 @@ let io: socketio.Server;
 const port: number = config.port || 3000;
 let sslOptions: https.ServerOptions;
 
-app.use(express.static(path.resolve(__dirname, config.frontend_folder)));
+app.use('/assets', express.static(path.resolve(__dirname, config.frontend_folder, 'assets')));
 app.use('/static', express.static(path.resolve(__dirname, 'static')));
 app.set('view engine', 'ejs');
 
@@ -93,7 +94,7 @@ app.get('/login', function(req, res) {
 app.post('/login', 
     passport.authenticate('local', {
         successRedirect: '/',
-        failureRedirect: '/login',
+        failureRedirect: '/login?info=w',
     })
 );
 
