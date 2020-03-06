@@ -16,7 +16,10 @@ module.exports = {
     },
     
     outputDir: '../dist',
-    assetsDir: 'static',
+    assetsDir: 'assets',
     indexPath: 'index.html',
-    filenameHashing: true
+    filenameHashing: true,
+    lintOnSave: false,
+    runtimeCompiler: true,
+    parallel: 4
 }
