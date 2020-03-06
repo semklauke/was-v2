@@ -378,8 +378,14 @@ VALUES
 
 
 -- Down
-DELETE FROM walkers;
 DELETE FROM donations;
+DELETE FROm walkers;
+DELETE from logins;
+DELETE from log;
+DELETE from rbs;
+
 DELETE from sqlite_sequence where name='walkers';
 DELETE from sqlite_sequence where name='donations';
 DELETE from sqlite_sequence where name='logins';
+DELETE from sqlite_sequence where name='log';
+DELETE from sqlite_sequence where name='rbs';
