@@ -30,5 +30,10 @@ export default {
 
     // default print date printet on the donation receipt
     // null means the current date of the access  
-    "print_date" : null
+    "print_date" : null,
+
+    frontend : {
+        "default_zipcode" : "59494",
+        "default_city" : "Soest"
+    }
 };
