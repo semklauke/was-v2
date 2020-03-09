@@ -29,7 +29,7 @@ let server: https.Server;
 let io: socketio.Server;
 
 // express setup
-const port: number = config.port || 3000;
+const port: number = config.port || 443;
 let sslOptions: https.ServerOptions;
 
 app.use('/assets', express.static(path.resolve(__dirname, config.frontend_folder, 'assets')));
