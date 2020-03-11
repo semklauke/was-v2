@@ -126,7 +126,8 @@ function initSocket(socket: socketio.Socket) : void {
     CONNECTIONS++;
 
     io.emit('user_count_changed', CONNECTIONS);
-    const address: string = socket.handshake.headers["x-forwarded-for"].split(",")[0];
+    //const address: string = socket.handshake.headers["x-forwarded-for"].split(",")[0];
+    const address: string = "//TODO :)";
     logger.info("User connected from %s", address);
 
     socket.on("walker_lock", function(data) {
