@@ -30,7 +30,9 @@ export default {
         if (node !== null) {
             node.classList.add('animated', animationName);
             function handleAnimationEnd(): void {
+                //@ts-ignore
                 node.classList.remove('animated', animationName);
+                //@ts-ignore
                 node.removeEventListener('animationend', handleAnimationEnd);
 
                 if (typeof callback === 'function') callback()

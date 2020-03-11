@@ -4,12 +4,17 @@ import './plugins/vue-axios';
 import App from './App.vue';
 import router from './router';
 import cookie from 'cookie';
+import io from 'socket.io-client';
+
 
 Vue.config.productionTip = false;
 
 let vm = new Vue({
-  router,
-  render: h => h(App),
+    data: {
+        socket: null   
+    },
+    router,
+    render: h => h(App),
 }).$mount('#app');
 
 //@ts-ignore
@@ -26,6 +31,11 @@ vm.axios.interceptors.request.use(function (config: any) {
     }
     return config;
 }, function (error: any) {
-    
     return Promise.reject(error);
 });
+
+//@ts-ignore
+vm.socket = io();
+
+
+

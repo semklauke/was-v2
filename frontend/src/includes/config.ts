@@ -1,2 +1,2 @@
 import config from './../../../src/includes/config';
-export default config.fronted;
+export default config.frontend;
