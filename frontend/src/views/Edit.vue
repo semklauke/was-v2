@@ -36,7 +36,7 @@
                 enter-active-class="animated bounceInLeft faster edit_walker_transition"
                 mode="in-out"
             >
-            <router-view :key="activeWalker" />
+            <router-view :key="activeWalker" @scrolldown="scrolldown" />
             </transition>
         </b-col>
     </b-row>
@@ -45,6 +45,10 @@
 
 <script>
 import helper from '@/includes/helper';
+import smoothscroll from 'smoothscroll-polyfill';
+ 
+// kick off the polyfill!
+smoothscroll.polyfill();
 
 export default {
     data: function () {
@@ -78,6 +82,12 @@ export default {
         },
         active_walker(id) {
             this.activeWalker = id;
+        },
+        scrolldown() {
+            setTimeout(() => {
+                let edit_col = document.getElementById("WAS_edit_col");
+                edit_col.scroll({ top: edit_col.scrollHeight, left: 0, behavior: 'smooth' });
+            }, 500);
         }
     },
     computed: {
