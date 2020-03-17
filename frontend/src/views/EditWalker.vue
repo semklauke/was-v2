@@ -58,6 +58,7 @@
                             v-model="walker.firstname" 
                             class="not-empty"
                             autocomplete="off"
+                            @input="updateWalkerState('firstname')"
                         >  
                         </b-form-input>
                     </b-form-group>
@@ -74,6 +75,7 @@
                             v-model="walker.lastname" 
                             class="not-empty"
                             autocomplete="off"
+                            @input="updateWalkerState('lastname')"
                         >  
                         </b-form-input>
                     </b-form-group>
@@ -89,6 +91,7 @@
                             id="WAS_edit_walker_form_class" 
                             v-model="walker.class" 
                             class="not-empty"
+                            @input="updateWalkerState('class')"
                         >  
                             <optgroup>
                                 <option>5A</option>
@@ -137,7 +140,8 @@
                     >
                         <b-form-radio-group
                             id="WAS_edit_walker_form_participates" 
-                            v-model="walker.participates" 
+                            v-model="walker.participates"
+                            @input="updateWalkerState('participates')"
                             class="not-empty"
                             :options="[{text:'Ja',value:'1'},{text:'Nein',value:'0'},{text:'Entschuldigt',value:'2'}]"
                             buttons
@@ -163,6 +167,7 @@
                                 no-wheel="true"
                                 autocomplete="off"
                                 v-model="walker.distance_m"
+                                @input="updateWalkerState('distance_m')"
                             ></b-form-input>
                             <template v-slot:append>
                                 <b-input-group-text >m</b-input-group-text>
@@ -178,12 +183,26 @@
         </div>
         <div id="WAS_edit_walker_donations">
             <was-donation 
-                v-for="(d, d_index) in donations_computed"
+                v-for="(d, d_index) in donations"
+                :key="d.rec_id"
+                fetch="false"
+                :donation.sync="d"
+                :donation_state.sync="state_donations[d_index]"
+                :walker_id="walker.rec_id"
+                :donation_index="d_index"
+                :isNew="false"
+                @deleteDonation="deleteDonation"
+            >
+            </was-donation>
+            <was-donation 
+                v-for="(d, d_index) in new_donations"
                 :key="d.rec_id"
                 fetch="false"
                 :donation.sync="d"
                 :walker_id="walker.rec_id"
-                :donation_index="d_index"
+                :donation_index="d_index+(donations.length)"
+                :isNew="true"
+                @deleteDonation="deleteDonation"
             >
             </was-donation>
         </div>
@@ -202,7 +221,7 @@ export default {
         return {
             loading: true,
             error: null,
-            saving: 0,
+            saveing: 0,
             walker: null,
             state_walker: {
                 class: false,
@@ -296,23 +315,19 @@ export default {
                 this.state_walker[w] = false;
             }
             for (let sd of this.state_donatios) {
-                if sd.new == false {
-                    for (let s in sd) {
-                        if (s != "new")
-                            sd[s] = false;
-                    }
-                }
+                for (let s in sd)
+                    sd[s] = false;
             }
         },
-        updateState: function( ) {
+        updateWalkerState: function(key) {
             var context = this;
-            Vue.nextTick(function () {
-                alert(context.myModel);
-            }
-        }
+            this.$nextTick(function () {
+                context.state_walker[key] = true;
+            });
+        },
         saveBtn: function() {
 
-            this.saving = 1;
+            this.saveing = 1;
             let walkerDirty = false;
             let walkerUpdate = {};
             for (let w in this.state_walker) {
@@ -343,107 +358,91 @@ export default {
             }
 
 
-            
+            let promises = [];
             if (walkerDirty) {
-
-                console.log("1");
-
                 let reqUrl = "/api/walker/" + parseInt(this.$route.params.id);
                 let put_data = {
                     walker: walkerUpdate
                 };
-                if (donationDirty) {
-                    reqUrl += "?donations=true";
-                    put_data.donations = donationUpdate;
-                }
+                promises.push( 
+                    this.$root.axios.put(reqUrl, put_data).then((res) => {
+                        if (res.status == 404) {
+                            this.error = "Walker with id '"+ this.$route.params.id+"' does not exists. 404 at "+reqUrl;
+                        } else if (res.status == 400)
+                            this.error = "Bad Request at "+reqUrl;
 
-                this.$root.axios.put(reqUrl, put_data).then((res) => {
-                    console.log("2");
-                    if (res.status == 200) {
-                        this.resetState();
-                        this.saveing = 2;
-                        setTimeout(() => {
-                            this.saveing = 0;
-                        }, 1500);
-                    } else if (res.status == 404) {
-                        this.error = "Walker with id '"+ this.$route.params.id+"'' does not exists.";
-                    }
-                    else if (res.status == 400)
-                        this.error = "Bad Request at "+reqUrl;
-
-                    if (this.error !== null) {
+                        if (this.error !== null) {
+                            this.animateCSS("#WAS_edit_walker_wrapper", "shake");
+                            console.error(this.error);
+                        }
+                        
+                    }).catch(function(err) {
+                        this.error = "Bad Request at "+reqUrl+". With Error: "+err.toString();
                         this.animateCSS("#WAS_edit_walker_wrapper", "shake");
                         console.error(this.error);
+                    })
+                );
+            }    
+            if (donationDirty) {
+                for (let don of donationUpdate) {
+                    let reqUrl = "/api/donation/" + don.rec_id; 
+                    promises.put( 
+                        this.$root.axios.put(reqUrl, { donation: don }).then((res) => {
+                            if (res.status == 404)
+                                this.error = "Walker with id '"+ this.$route.params.id+"' does not exists. 404 at "+reqUrl;
+                            else if (res.status == 400)
+                                this.error = "Bad Request at "+reqUrl;
+                        }).catch((err) => {
+                            this.error = "Bad Request at "+reqUrl+". With Error: "+err.toString();
+                        })
+                    );
+                }
+            }
+            console.log(this.new_donations.length);
+            if (this.new_donations != null && this.new_donations.length > 0) {
+                for (let don of this.new_donations) {
+                    let reqUrl = "/api/donation/walker/" + this.walker.rec_id; 
+                    promises.push( 
+                        this.$root.axios.post(reqUrl, { donation: don }).then((res) => {
+                            if (res.status == 404)
+                                this.error = "Walker with id '"+ this.$route.params.id+"' does not exists. 404 at "+reqUrl;
+                            else if (res.status == 400)
+                                this.error = "Bad Request at "+reqUrl;
+                        }).catch((err) => {
+                            this.error = "Bad Request at "+reqUrl+". With Error: "+err.toString();
+                        })
+                    );
+                }   
+            }
+            if (promises.length !== 0) {
+                Promise.all(promises).then((res) => {
+                    this.resetState();
+                    if (this.error === null) {
+                        this.fetchData();
+                        setTimeout(() => {
+                            this.saveing = 2;
+                            setTimeout(() => {
+                                this.saveing = 0;
+                            }, 2200);  
+                        }, 1000);
+                    } else {
+                        this.animateCSS("#WAS_edit_walker_wrapper", "shake");
+                        console.error(this.error);
+                        this.saveing = 0;
                     }
-                    
-                }).catch(function(err) {
-                    this.error = "Bad Request at "+reqUrl+". With Error: "+err.toString();
+                }).catch((err) => {
                     this.animateCSS("#WAS_edit_walker_wrapper", "shake");
                     console.error(this.error);
                 });
             } else {
-                console.log("3");
-                let promises = [];
-                if (donationDirty) {
-                    console.log("4");
-                    for (let don of donationUpdate) {
-                        let reqUrl = "/api/donation/" + don.rec_id; 
-                        promises.push( 
-                            this.$root.axios.put(reqUrl, don).then((res) => {
-                                if (res.status == 404)
-                                    this.error = "Walker with id '"+ this.$route.params.id+"'' does not exists.";
-                                else if (res.status == 400)
-                                    this.error = "Bad Request at "+reqUrl;
-                            }).catch((err) => {
-                                this.error = "Bad Request at "+reqUrl+". With Error: "+err.toString();
-                            })
-                        );
-                    }
-                }
-                if (this.new_donations.legnth != 0) {
-                    console.log("5");
-                    for (let don of this.new_donations) {
-                        let reqUrl = "/api/donation/walker/" + this.walker.rec_id; 
-                        promises.push( 
-                            this.$root.axios.put(reqUrl, don).then((res) => {
-                                if (res.status == 404)
-                                    this.error = "Walker with id '"+ this.$route.params.id+"'' does not exists.";
-                                else if (res.status == 400)
-                                    this.error = "Bad Request at "+reqUrl;
-                            }).catch((err) => {
-                                this.error = "Bad Request at "+reqUrl+". With Error: "+err.toString();
-                            })
-                        );
-                    }   
-                }
-                if (promises.length !== 0) {
-                    console.log("6");
-                    Promise.all(promises).then((res) => {
-                        this.resetState();
-                        if (this.error === null) {
-                            this.fetchData(() => {
-                                this.saveing = 2;
-                                setTimeout(() => {
-                                    this.saveing = 0;
-                                }, 1500);
-                            });
-                        } else {
-                            this.animateCSS("#WAS_edit_walker_wrapper", "shake");
-                            console.error(this.error);
-                            this.saveing = 0;
-                        }
-                    }).catch((err) => {
-                        this.animateCSS("#WAS_edit_walker_wrapper", "shake");
-                        console.error(this.error);
-                    })
-                }
+                this.saveing = 0;
             }
         },
         deleteBtn: function() {
             let s = this.walker;
             this.$bvModal.msgBoxConfirm(
-                s.firstname+' '+s.lastname+' wirkilich löschen?', {
-                title: 'L',
+                "Läufer "+s.firstname+' '+s.lastname+' wirklich löschen?', {
+                title: 'Löschen bestätigen',
                 size: 'sm',
                 buttonSize: 'sm',
                 okVariant: 'danger',
@@ -457,7 +456,7 @@ export default {
                 if (value === true) {
                     // confirmed delete
                     let reqUrl = "/api/walker/"+this.walker.rec_id+"?donations=true";
-                    this.$root.axios.put(reqUrl).then((res) => {
+                    this.$root.axios.delete(reqUrl).then((res) => {
                         if (res.status == 200) {
                             this.$router.replace({ name: 'edit' });
                         } else if (res.status == 404)
@@ -490,17 +489,50 @@ export default {
                 firstname: '',
                 lastname: ''
             });
-            this.state_donations.push({
-                donation_each_km: false,
-                donation_amout_recived: false,
-                needs_donation_receipt: false,
-                donation_recived: false,
-                zipcode: false,
-                city: false,
-                adrdess: false,
-                firstname: false,
-                lastname: false
-            });
+            this.$emit('scrolldown');
+        },
+        deleteDonation: function(info) {
+            if (info.isNew) {
+                this.new_donations.splice(info.i - this.donations.length, 1);
+            } else {
+                let d = this.donations[info.i];
+                this.$bvModal.msgBoxConfirm(
+                    "Spenden von "+d.firstname+' '+d.lastname+' wirklich löschen?', {
+                    title: 'Löschen bestätigen',
+                    size: 'sm',
+                    buttonSize: 'sm',
+                    okVariant: 'danger',
+                    okTitle: 'LÖSCHEN',
+                    cancelTitle: 'ABBRECHEN',
+                    footerClass: 'p-2',
+                    hideHeaderClose: false,
+                    centered: true
+                })
+                .then(value => {
+                    if (value === true) {
+                        // confirmed delete
+                        let reqUrl = "/api/donation/"+d.rec_id;
+                        this.$root.axios.delete(reqUrl).then((res) => {
+                            if (res.status == 200) {
+                                this.donations.splice(info.i, 1);
+                            } else if (res.status == 404)
+                                this.error = "Donation with id '"+d.rec_id+"' does not exists.";
+                            else if (res.status == 400)
+                                this.error = "Bad Request at "+reqUrl;
+                        }).catch((err) => {
+                            this.error = "Bad Request at "+reqUrl+". With Error: "+err.toString();
+                        });
+
+                        if (this.error !== null) {
+                            this.animateCSS("#WAS_edit_walker_wrapper", "shake");
+                            console.error(this.error);
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.error("should not happend I guess. Invastiagte more into vue boostrap modal presets");
+                });
+            }
         },
         animateCSS: function(element, animationName, callback) {
             const node = document.querySelector(element)
