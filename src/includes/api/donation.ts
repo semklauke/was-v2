@@ -106,6 +106,7 @@ r.post('/walker/:walker_id', secure, bodyParser.json(), function(req, res){
     }
 
     let d: Donation = req.body.donation;
+    d.walker_id = walker_id;
 
     // check wether the walker exist
     let walker: Walker | undefined = DB().queryFirstRow(sql_walker, walker_id);

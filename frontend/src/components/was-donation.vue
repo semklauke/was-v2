@@ -17,6 +17,7 @@
                             class="not-empty WAS_donation_form_firstname"
                             autocomplete="off"
                             placeholder=""
+                            @input="updateState('firstname')"
                         >  
                         </b-form-input>
                     </b-form-group>
@@ -34,6 +35,7 @@
                             class="not-empty WAS_donation_form_lastname"
                             autocomplete="off"
                             placeholder=""
+                            @input="updateState('lastname')"
                         >  
                         </b-form-input>
                     </b-form-group>
@@ -55,6 +57,7 @@
                             no-wheel="true"
                             autocomplete="off"
                             placeholder=""
+                            @input="updateState('zipcode')"
                         >  
                         </b-form-input>
                     </b-form-group>
@@ -72,6 +75,7 @@
                             class="not-empty WAS_donation_form_city"
                             autocomplete="off"
                             placeholder=""
+                            @input="updateState('city')"
                         >  
                         </b-form-input>
                     </b-form-group>
@@ -89,6 +93,7 @@
                             class="not-empty WAS_donation_form_address"
                             autocomplete="off"
                             placeholder=""
+                            @input="updateState('address')"
                         >  
                         </b-form-input>
                     </b-form-group>
@@ -111,6 +116,7 @@
                             no-wheel="true"
                             autocomplete="off"
                             placeholder=""
+                            @input="updateState('donation_each_km')"
                         >
                         </b-form-input>
                         </b-input-group>
@@ -154,6 +160,7 @@
                                 no-wheel="true"
                                 autocomplete="off"
                                 placeholder=""
+                                @input="updateState('donation_amout_recived')"
                             >
                             </b-form-input>
                             <template v-slot:append>
@@ -194,6 +201,7 @@
                             class="not-empty WAS_edit_walker_form_needs_donation_receipt"
                             :options="[{text:'Ja',value:'1'},{text:'Nein',value:'0'}]"
                             buttons
+                            @input="updateState('needs_donation_receipt')"
                         >  
                         </b-form-radio-group>
                     </b-form-group>
@@ -201,7 +209,9 @@
             </b-row>
             <b-row class="WAS_donation_box_row">
                 <b-col cols="6" xl="3">
-                    <b-button pill variant="danger" size="sm"><b-icon icon="trash-fill"></b-icon>  Delete</b-button>
+                    <b-button pill variant="danger" size="sm" @click="$emit('deleteDonation', { isNew: isNew, i: donation_index})">
+                        <b-icon icon="trash-fill"></b-icon>  Delete
+                    </b-button>
                 </b-col>
             </b-row>
         </div>
@@ -218,7 +228,8 @@ export default Vue.extend({
         donation: Object,
         walker_id: Number,
         donation_index: Number,
-        //new: Boolean,
+        donation_state: Object,
+        isNew: Boolean
     },
     data: function() {
         return {
@@ -232,6 +243,15 @@ export default Vue.extend({
         },
         applyToPay: function() {
             this.donation.donation_amout_recived = this.topay;
+        },
+        updateState: function(key) {
+            if (this.isNew) 
+                return;
+
+            let context = this;
+            this.$nextTick(function () {
+                context.donation_state[key] = true;
+            });
         }
     },
     computed: {

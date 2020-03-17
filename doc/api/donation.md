@@ -88,9 +88,7 @@ Update Donation Object with id `donation_id`
 * Body:
 ```typescript
 {
-  donation: Walker,
-  donations?: Donation[]
-  
+  donation: Donation,
 }
 ```
 ### Response
