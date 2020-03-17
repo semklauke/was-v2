@@ -189,10 +189,6 @@ r.delete('/:walker_id', secure, function(req, res){
         return;
     }
 
-    DB().prepare(sql_delete_walker).run(walker_id);
-    //@ts-ignore
-    logger.info("Walker %s (%d) deleted by %s", (w.firstname + " " + w.lastname), walker_id, req.user.name);
-
     if (req.query.donations != undefined && req.query.donations == 'true') {
         let stmt: sqlite.Statement = DB().prepare(sql_delete_donations_walker);
         let deletions: number = stmt.run(walker_id).changes;
@@ -203,6 +199,12 @@ r.delete('/:walker_id', secure, function(req, res){
             req.user.name
         );
     }
+
+    DB().prepare(sql_delete_walker).run(walker_id);
+    //@ts-ignore
+    logger.info("Walker %s (%d) deleted by %s", (w.firstname + " " + w.lastname), walker_id, req.user.name);
+
+    
     io.emit("walker_deleted", walker_id);
     res.status(200).json({ success: "Walker deleted", rec_id: walker_id });
 });
