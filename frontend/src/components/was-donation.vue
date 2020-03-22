@@ -257,7 +257,6 @@ export default Vue.extend({
 
             for (let ds in this.donation_state) {
                 if (ds != "new" && (this.isNew || this.donation_state[ds] == true)) {
-                    console.log("displayState " + ds);
                     let input = document.getElementById(this.formid("WAS_donation_form_"+ds));
                     if (input != null) input.classList.add('border', 'border-warning');
                 }

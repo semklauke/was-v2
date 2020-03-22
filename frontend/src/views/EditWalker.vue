@@ -214,6 +214,9 @@
     id="save-modal"
     ref="save-modal"
     centered
+    no-close-on-backdrop
+    no-close-on-esc
+    hide-header-close
     title="Manche Änderungen wurden nicht gespeichert. Fortfahren ?"
 >
         <template v-slot:modal-footer>
@@ -231,6 +234,23 @@
                 <b-spinner small v-if="saveing == 1"></b-spinner>  
                  SPEICHERN
             </b-button>
+        </template>
+
+        <template v-slot:default>
+            <h6 v-if="state_walker_computed.length != 0">Läufer:</h6>
+            <ul>
+                <li v-for="(w, w_index) in state_walker_computed" :key="w_index">
+                    &ensp;{{ w }}
+                </li>
+            </ul>
+            <div v-for="(d, d_index) in state_donations_computed" :key="d_index">
+                <h6 v-if="d.length != 0">Spender {{ d_index }}</h6>
+                <ul>
+                        <li v-for="ds in d" :key="''+d_index+ds">
+                            {{ ds }}
+                        </li>
+                </ul>
+            </div>
         </template>
     </b-modal>
 </div>
@@ -302,6 +322,26 @@ export default {
         donations_computed: function() {
             if (this.dontions === null) return this.new_donations;
             else return this.donations.concat(this.new_donations);
+        },
+        state_walker_computed: function() {
+            let r = [];
+            for (let w in this.state_walker) {
+                if (this.state_walker[w] == true)
+                    r.push(w)
+            }
+            return r;
+        },
+        state_donations_computed: function() {
+            let r = [];
+            for (let sd of this.state_donations) {
+                let d = [];
+                for (let s in sd) {
+                    if (sd[s] == true)
+                        d.push(s);
+                }
+                r.push(d);
+            }
+            return r;
         }
     },
     methods: {
