@@ -31,9 +31,9 @@ interface Donation {
   rec_id?: number,
   walker_id: number,
   donation_each_km: number,
-  donation_amout_recived: number,
+  donation_amount_received: number,
   needs_donation_receipt: number, //(0,1)
-  donation_recived: number, //(0,1)
+  donation_received: number, //(0,1)
   zipcode?: number,
   city?: string,
   adrdess?: string,

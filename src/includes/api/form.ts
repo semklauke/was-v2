@@ -33,7 +33,7 @@ const sql_donations: SQL = `
         walkers.firstname AS walker_firstname,
         walkers.lastname AS walker_lastname,
         walkers.distance_m AS walker_distance_m,
-        d.donation_amout_recived AS donation_amout_recived,
+        d.donation_amount_received AS donation_amount_received,
         d.donation_each_km AS donation_each_km,
         d.zipcode AS zipcode, 
         d.city AS city, 
@@ -45,7 +45,7 @@ const sql_donations: SQL = `
         ON d.walkers_id = walkers.rec_id 
     WHERE 
         d.needs_donation_receipt = 1 
-        AND donation_recived = 1 
+        AND donation_received = 1 
         AND walkers.class LIKE ? 
     ORDER BY walkers.lastname, walkers.firstname, d.lastname, d.firstname 
 `;
@@ -56,7 +56,7 @@ const sql_donations_course: SQL = `
         walkers.firstname AS walker_firstname,
         walkers.lastname AS walker_lastname,
         walkers.distance_m AS walker_distance_m,
-        d.donation_amout_recived AS donation_amout_recived,
+        d.donation_amount_received AS donation_amount_received,
         d.donation_each_km AS donation_each_km,
         d.zipcode AS zipcode, 
         d.city AS city, 
@@ -68,7 +68,7 @@ const sql_donations_course: SQL = `
         ON d.walkers_id = walkers.rec_id 
     WHERE 
         d.needs_donation_receipt = 1 
-        AND donation_recived = 1 
+        AND donation_received = 1 
         AND walkers.class LIKE ? 
         AND walkers.course = ? 
     ORDER BY walkers.lastname, walkers.firstname, d.lastname, d.firstname 
@@ -110,7 +110,7 @@ router.get('/:class_ident', secureFrontend, function(req, res) {
 
     let donationStmt: sqlite.Statement = DB().prepare(sql_donations);
     for (let d of donationStmt.iterate("%"+class_ident)) {
-        let money: number = round(parseFloat(d.donation_amout_recived)); 
+        let money: number = round(parseFloat(d.donation_amount_received)); 
         if (money >= 10.0) {
             let printDate: string;
             if (config.print_date == null) {
@@ -167,7 +167,7 @@ router.get('/:class_ident/:course', secureFrontend, function(req, res) {
 
     let donationStmt: sqlite.Statement = DB().prepare(sql_donations_course);
     for (let d of donationStmt.iterate("%"+class_ident, course)) {
-        let money: number = round(parseFloat(d.donation_amout_recived)); 
+        let money: number = round(parseFloat(d.donation_amount_received)); 
         if (money >= 10.0) {
             let printDate: string;
             if (config.print_date == null) {

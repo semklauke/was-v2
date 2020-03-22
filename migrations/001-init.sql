@@ -16,9 +16,9 @@ CREATE TABLE donations (
     walker_id INTEGER NOT NULL,
     donation_each_km REAL NOT NULL,
     --gesamtspende REAL DEFAULT NULL,
-    donation_amout_recived REAL NOT NULL DEFAULT 0,
+    donation_amount_received REAL NOT NULL DEFAULT 0,
     needs_donation_receipt INTEGER NOT NULL DEFAULT 0,
-    donation_recived INTEGER NOT NULL DEFAULT 0,
+    donation_received INTEGER NOT NULL DEFAULT 0,
     zipcode INTEGER DEFAULT 59494,
     city VARCHAR DEFAULT 'Soest',
     address VARCHAR,
@@ -26,7 +26,7 @@ CREATE TABLE donations (
     lastname VARCHAR NOT NULL,
     --spender_nr INTEGER NOT NULL,
     CHECK (needs_donation_receipt IN (0,1)),
-    CHECK (donation_recived IN (0,1)),
+    CHECK (donation_received IN (0,1)),
     FOREIGN KEY(walker_id) REFERENCES walkers(rec_id)
 );
 

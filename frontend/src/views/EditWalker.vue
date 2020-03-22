@@ -1,6 +1,7 @@
 <template>
 
 
+
 <div id="WAS_edit_walker_wrapper" :key="$route.params.id">
     <div v-if="error" class="WAS_walker_error" class="row">
         <b-col>
@@ -29,11 +30,10 @@
     </div>
     <div v-if="walker" id="WAS_edit_walker" class="">
         <div id="WAS_edit_toolar">
-            <b-button variant="outline-primary" size="sm" @click="saveBtn">
+            <b-button variant="outline-primary" size="sm" @click="save(fetchData())">
                 <b-icon icon="documents" v-if="saveing == 0"></b-icon>
                 <b-icon icon="check" v-if="saveing == 2"></b-icon>
                 <b-spinner small v-if="saveing == 1"></b-spinner>  
-
                  Save
             </b-button>
             <b-button variant="outline-danger" size="sm" @click="deleteBtn">
@@ -159,10 +159,10 @@
                         label-align="left"
                     >
                         <b-input-group
-                            id="WAS_edit_walker_form_distance_ig" 
+                            id="WAS_edit_walker_form_distance_g" 
                         >  
                             <b-form-input
-                                id="WAS_edit_walker_form_distance"
+                                id="WAS_edit_walker_form_distance_m"
                                 type="number"
                                 no-wheel="true"
                                 autocomplete="off"
@@ -192,6 +192,7 @@
                 :donation_index="d_index"
                 :isNew="false"
                 @deleteDonation="deleteDonation"
+                ref="donations"
             >
             </was-donation>
             <was-donation 
@@ -203,11 +204,38 @@
                 :donation_index="d_index+(donations.length)"
                 :isNew="true"
                 @deleteDonation="deleteDonation"
+                ref="donations"
             >
             </was-donation>
         </div>
     </div>
+
+    <b-modal
+    id="save-modal"
+    ref="save-modal"
+    centered
+    title="Manche Änderungen wurden nicht gespeichert. Fortfahren ?"
+>
+        <template v-slot:modal-footer>
+            <b-button variant="secondary" @click="dismissSaveModal">
+                <b-icon icon="box-arrow-right"></b-icon> ABBRECHEN
+            </b-button>
+            
+            <b-button variant="danger" @click="discardSaveModal">
+                <b-icon icon="x-octagon"></b-icon> VERWERFEN
+            </b-button>
+
+            <b-button variant="primary" @click="saveSaveModal">
+                <b-icon icon="documents" v-if="saveing == 0"></b-icon>
+                <b-icon icon="check" v-if="saveing == 2"></b-icon>
+                <b-spinner small v-if="saveing == 1"></b-spinner>  
+                 SPEICHERN
+            </b-button>
+        </template>
+    </b-modal>
 </div>
+
+
 
 </template>
 
@@ -233,17 +261,42 @@ export default {
             donations: null,
             new_donations: [],
             state_donations: [],
-            dialog: ''
+            nextRoute: null,
+            overwriteState: false
         };
     },
     components: {
         'was-donation': WasDonation
     },
     created() {
-        this.fetchData();
+        this.fetchData(2);
     },
     watch: {
-        '$route': 'fetchData'
+        '$route.params.id': 'fetchData'
+    },
+    beforeRouteUpdate(to, from, next) {
+        if (this.overwriteState) {
+            this.overwriteState = false;
+            next();
+        } else if (this.checkState()) {
+            this.nextRoute = to;
+            this.displayState();
+            this.$refs['save-modal'].show();
+        } else {
+            next();
+        } 
+    },
+    beforeRouteLeave(to, from, next) {
+        if (this.overwriteState) {
+            this.overwriteState = false;
+            next();
+        } else if (this.checkState()) {
+            this.nextRoute = to;
+            this.displayState();
+            this.$refs['save-modal'].show();
+        } else {
+            next();
+        }
     },
     computed: {
         donations_computed: function() {
@@ -264,6 +317,7 @@ export default {
                 if (res.status == 200) {
                     this.walker = res.data.walker;
                     this.donations = res.data.donations;
+
                 } else if (res.status == 404)
                     this.error = "Walker with id '"+ this.$route.params.id+"'' does not exists.";
                 else if (res.status == 400)
@@ -274,23 +328,24 @@ export default {
                     console.error(this.error);
                 }
                 
-                this.loading = false;
                 this.deleteState();
                 for (let d in this.donations) {
                     this.state_donations.push({
                         donation_each_km: false,
-                        donation_amout_recived: false,
+                        donation_amount_received: false,
                         needs_donation_receipt: false,
-                        donation_recived: false,
+                        donation_received: false,
                         zipcode: false,
                         city: false,
-                        adrdess: false,
+                        address: false,
                         firstname: false,
                         lastname: false,
                         new: false
                     });
                 }
                 
+                this.loading = false;
+
                 if (typeof callback === 'function') callback();
                 
             }).catch(function(err) {
@@ -325,7 +380,51 @@ export default {
                 context.state_walker[key] = true;
             });
         },
-        saveBtn: function() {
+        displayState: function() {
+            for (let w in this.state_walker) {
+                if (this.state_walker[w] == true) {
+                    let input = document.getElementById("WAS_edit_walker_form_"+w);
+                    input.classList.add('border', 'border-warning');
+                }
+            }
+            for (let d of this.$refs.donations) {
+                d.displayState();
+            }
+            this.animateCSS("#WAS_edit_walker_wrapper", "shake");
+        },
+        checkState: function() {
+            if (this.new_donations.length > 0)
+                return true;
+
+            for (let w in this.state_walker) {
+                if (this.state_walker[w] === true) return true;
+            }
+            for (let i = 0; i < this.state_donations.length; i++) {
+                let sd = this.state_donations[i];
+                for (let d in sd) {
+                    if (sd[d] === true) return true;
+                }
+            }
+            return false;
+        },
+        dismissSaveModal: function() {
+            this.$refs['save-modal'].hide();
+            this.overwriteState = false;
+            this.nextRoute = null;
+        },
+        saveSaveModal: function() {
+            this.save(() => {
+                this.$refs['save-modal'].hide();
+                this.overwriteState = true;
+                this.$router.push(this.nextRoute);
+            });
+        },
+        discardSaveModal: function() {
+            this.$refs['save-modal'].hide();
+            this.overwriteState = true;
+            this.$router.push(this.nextRoute);
+        },
+        save: function(onsuccess) {
 
             this.saveing = 1;
             let walkerDirty = false;
@@ -418,9 +517,9 @@ export default {
                 Promise.all(promises).then((res) => {
                     this.resetState();
                     if (this.error === null) {
-                        this.fetchData();
                         setTimeout(() => {
                             this.saveing = 2;
+                            if (typeof onsuccess === 'function') onsuccess();
                             setTimeout(() => {
                                 this.saveing = 0;
                             }, 2200);  
@@ -480,9 +579,9 @@ export default {
         addDonationBtn: function() {
             this.new_donations.push({
                 donation_each_km: null,
-                donation_amout_recived: 0,
+                donation_amount_received: 0,
                 needs_donation_receipt: 0,
-                donation_recived: 0,
+                donation_received: 0,
                 zipcode: config.default_zipcode,
                 city: config.default_city,
                 address: '',

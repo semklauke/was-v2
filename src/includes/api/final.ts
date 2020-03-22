@@ -62,7 +62,7 @@ router.get('/:class_ident', secureFrontend, function(req, res) {
         let wd: Donation[] = donationStmt.all(tmpw.rec_id);
         for (let d of wd) {
             let minsum: number = round((tmpw.distance_m/1000) * d.donation_each_km);
-            let sum: number = round(d.donation_amout_recived);
+            let sum: number = round(d.donation_amount_received);
             wr.sum += sum;
             wr.minsum = wr.minsum == undefined ? minsum : wr.minsum + minsum ;
             wr.donations.push({
@@ -117,7 +117,7 @@ router.get('/:class_ident/:course', secureFrontend, function(req, res) {
         let wd: Donation[] = donationStmt.all(tmpw.rec_id);
         for (let d of wd) {
             let minsum: number = round((tmpw.distance_m/1000) * d.donation_each_km);
-            let sum: number = round(d.donation_amout_recived);
+            let sum: number = round(d.donation_amount_received);
             wr.sum += sum;
             wr.minsum = wr.minsum == undefined ? minsum : wr.minsum + minsum ;
             wr.donations.push({

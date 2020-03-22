@@ -14,7 +14,7 @@
                         <b-form-input 
                             :id="formid('WAS_donation_form_firstname')" 
                             v-model="donation.firstname" 
-                            class="not-empty WAS_donation_form_firstname"
+                            class="not-empty WAS_donation_form_input WAS_donation_form_firstname"
                             autocomplete="off"
                             placeholder=""
                             @input="updateState('firstname')"
@@ -32,7 +32,7 @@
                         <b-form-input 
                             :id="formid('WAS_donation_form_lastname')" 
                             v-model="donation.lastname" 
-                            class="not-empty WAS_donation_form_lastname"
+                            class="not-empty WAS_donation_form_input WAS_donation_form_lastname"
                             autocomplete="off"
                             placeholder=""
                             @input="updateState('lastname')"
@@ -52,7 +52,7 @@
                         <b-form-input 
                             :id="formid('WAS_donation_form_zipcode')" 
                             v-model="donation.zipcode" 
-                            class="not-empty WAS_donation_form_zipcode"
+                            class="not-empty WAS_donation_form_input WAS_donation_form_zipcode"
                             type="number"
                             no-wheel="true"
                             autocomplete="off"
@@ -72,7 +72,7 @@
                         <b-form-input 
                             :id="formid('WAS_donation_form_city')" 
                             v-model="donation.city" 
-                            class="not-empty WAS_donation_form_city"
+                            class="not-empty WAS_donation_form_input WAS_donation_form_city"
                             autocomplete="off"
                             placeholder=""
                             @input="updateState('city')"
@@ -90,7 +90,7 @@
                         <b-form-input 
                             :id="formid('WAS_donation_form_address')" 
                             v-model="donation.address" 
-                            class="not-empty WAS_donation_form_address"
+                            class="not-empty WAS_donation_form_input WAS_donation_form_address"
                             autocomplete="off"
                             placeholder=""
                             @input="updateState('address')"
@@ -111,7 +111,7 @@
                         <b-form-input 
                             :id="formid('WAS_donation_form_donation_each_km')" 
                             v-model="donation.donation_each_km" 
-                            class="not-empty WAS_donation_form_donation_each_km"
+                            class="not-empty WAS_donation_form_input WAS_donation_form_donation_each_km"
                             type="number"
                             no-wheel="true"
                             autocomplete="off"
@@ -133,7 +133,7 @@
                         <b-form-input 
                             :id="formid('WAS_donation_form_topay')" 
                             v-model="topay" 
-                            class="not-empty WAS_donation_form_topay"
+                            class="not-empty WAS_donation_form_input WAS_donation_form_topay"
                             type="number"
                             no-wheel="true"
                             autocomplete="off"
@@ -146,21 +146,21 @@
                 </b-col>
                 <b-col cols="6" xl="4">
                     <b-form-group
-                        :id="formid('WAS_donation_form_donation_amout_recived_g')"
+                        :id="formid('WAS_donation_form_donation_amount_received_g')"
                         label="Erhaltener Betrag"
-                        :label-for="formid('WAS_donation_form_donation_amout_recived')"
+                        :label-for="formid('WAS_donation_form_donation_amount_received')"
                         label-align="left"
                     >
                         <b-input-group>
                             <b-form-input 
-                                :id="formid('WAS_donation_form_donation_amout_recived')" 
-                                v-model="donation.donation_amout_recived" 
-                                class="not-empty WAS_donation_form_donation_amout_recived"
+                                :id="formid('WAS_donation_form_donation_amount_received')" 
+                                v-model="donation.donation_amount_received" 
+                                class="not-empty WAS_donation_form_input WAS_donation_form_donation_amount_received"
                                 type="number"
                                 no-wheel="true"
                                 autocomplete="off"
                                 placeholder=""
-                                @input="updateState('donation_amout_recived')"
+                                @input="updateState('donation_amount_received')"
                             >
                             </b-form-input>
                             <template v-slot:append>
@@ -175,7 +175,7 @@
                     <b-form-group
                         :id="formid('WAS_donation_form_donation_recived_g')"
                         label="Spende Erhalte"
-                        :label-for="formid('WAS_edit_walker_form_donation_recived')"
+                        :label-for="formid('WAS_edit_walker_form_donation_received')"
                         label-align="left"
                     >
                         <b-form-radio-group
@@ -198,7 +198,7 @@
                         <b-form-radio-group
                             :id="formid('WAS_edit_walker_form_needs_donation_receipt')" 
                             v-model="donation.needs_donation_receipt" 
-                            class="not-empty WAS_edit_walker_form_needs_donation_receipt"
+                            class="not-empty WAS_donation_form_input WAS_edit_walker_form_needs_donation_receipt"
                             :options="[{text:'Ja',value:'1'},{text:'Nein',value:'0'}]"
                             buttons
                             @input="updateState('needs_donation_receipt')"
@@ -242,7 +242,7 @@ export default Vue.extend({
             return base_id + '__' + this.donation_identifier;
         },
         applyToPay: function() {
-            this.donation.donation_amout_recived = this.topay;
+            this.donation.donation_amount_received = this.topay;
         },
         updateState: function(key) {
             if (this.isNew) 
@@ -252,6 +252,14 @@ export default Vue.extend({
             this.$nextTick(function () {
                 context.donation_state[key] = true;
             });
+        },
+        displayState: function() {
+            for (let ds in this.donation_state) {
+                if (ds != "new" && (this.isNew || this.donation_state[ds] == true)) {
+                    let input = document.getElementById(this.formid("WAS_edit_walker_form_"+ds));
+                    if (input != null) input.classList.add('border', 'border-warning');
+                }
+            }
         }
     },
     computed: {
@@ -293,6 +301,10 @@ export default Vue.extend({
 
 .WAS_edit_walker_form_needs_donation_receipt {
     width: 100%;
+}
+
+.WAS_donation_form_input.border {
+    border-width: 3px;
 }
 
 
