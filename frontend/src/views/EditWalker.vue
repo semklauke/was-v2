@@ -363,13 +363,13 @@ export default {
             for (let w in this.state_walker) {
                 this.state_walker[w] = false;
             }
-            this.state_donatios = [];
+            this.state_donations = [];
         },
         resetState: function() {
             for (let w in this.state_walker) {
                 this.state_walker[w] = false;
             }
-            for (let sd of this.state_donatios) {
+            for (let sd of this.state_donations) {
                 for (let s in sd)
                     sd[s] = false;
             }
@@ -485,7 +485,7 @@ export default {
             if (donationDirty) {
                 for (let don of donationUpdate) {
                     let reqUrl = "/api/donation/" + don.rec_id; 
-                    promises.put( 
+                    promises.push( 
                         this.$root.axios.put(reqUrl, { donation: don }).then((res) => {
                             if (res.status == 404)
                                 this.error = "Walker with id '"+ this.$route.params.id+"' does not exists. 404 at "+reqUrl;
@@ -497,7 +497,7 @@ export default {
                     );
                 }
             }
-            console.log(this.new_donations.length);
+
             if (this.new_donations != null && this.new_donations.length > 0) {
                 for (let don of this.new_donations) {
                     let reqUrl = "/api/donation/walker/" + this.walker.rec_id; 

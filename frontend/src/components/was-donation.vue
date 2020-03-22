@@ -192,13 +192,13 @@
                     <b-form-group
                         :id="formid('WAS_donation_form_needs_donation_receipt_g')"
                         label="Quittung"
-                        :label-for="formid('WAS_edit_walker_form_needs_donation_receipt')"
+                        :label-for="formid('WAS_donation_form_needs_donation_receipt')"
                         label-align="left"
                     >
                         <b-form-radio-group
-                            :id="formid('WAS_edit_walker_form_needs_donation_receipt')" 
+                            :id="formid('WAS_donation_form_needs_donation_receipt')" 
                             v-model="donation.needs_donation_receipt" 
-                            class="not-empty WAS_donation_form_input WAS_edit_walker_form_needs_donation_receipt"
+                            class="not-empty WAS_donation_form_input WAS_donation_form_needs_donation_receipt"
                             :options="[{text:'Ja',value:'1'},{text:'Nein',value:'0'}]"
                             buttons
                             @input="updateState('needs_donation_receipt')"
@@ -254,9 +254,11 @@ export default Vue.extend({
             });
         },
         displayState: function() {
+
             for (let ds in this.donation_state) {
                 if (ds != "new" && (this.isNew || this.donation_state[ds] == true)) {
-                    let input = document.getElementById(this.formid("WAS_edit_walker_form_"+ds));
+                    console.log("displayState " + ds);
+                    let input = document.getElementById(this.formid("WAS_donation_form_"+ds));
                     if (input != null) input.classList.add('border', 'border-warning');
                 }
             }
