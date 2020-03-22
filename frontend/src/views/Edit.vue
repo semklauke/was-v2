@@ -17,7 +17,6 @@
                         active-class="nonesese" 
                         replace
                         :to="{ name: 'edit-walker', params: { id: w.rec_id } }"
-                        v-on:click.native="active_walker(w.rec_id)"
                     >
                         <div class="col-8 col-xl-8 WAS_walker_list_name">{{ w.firstname }}&nbsp;{{ w.lastname }}</div>
                         <div class="col-md-2 WAS_walker_list_class">{{ w.class }}</div>
@@ -36,7 +35,7 @@
                 enter-active-class="animated bounceInLeft faster edit_walker_transition"
                 mode="in-out"
             >
-            <router-view :key="activeWalker" @scrolldown="scrolldown" />
+            <router-view  @scrolldown="scrolldown" />
             </transition>
         </b-col>
     </b-row>
@@ -46,7 +45,6 @@
 <script>
 import helper from '@/includes/helper';
 import smoothscroll from 'smoothscroll-polyfill';
- 
 // kick off the polyfill!
 smoothscroll.polyfill();
 
@@ -54,7 +52,6 @@ export default {
     data: function () {
         return { 
             search: '',
-            activeWalker: null,
             walker: null
         };
     },
@@ -79,9 +76,6 @@ export default {
             } else if (part == 0) {
                 return "alert-circle-fill"
             }
-        },
-        active_walker(id) {
-            this.activeWalker = id;
         },
         scrolldown() {
             setTimeout(() => {
