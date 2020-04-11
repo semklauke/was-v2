@@ -715,3 +715,11 @@ h1 {
     float: right;
 }
 </style>
+
+<style>
+
+#WAS_edit_walker_form_participates_g label.btn {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+}
+</style>
