@@ -1,4 +1,5 @@
 import { Logger, LeveledLogMethod } from 'winston';
+import { Course } from './../includes/helper';
 
 interface WasLogger extends Logger {
     app: LeveledLogMethod;
@@ -16,7 +17,8 @@ interface Walker {
     distance_m: number
     lastname: string,
     firstname: string,
-    participates: number
+    participates: number,
+    course?: string | Course | null
 }
 
 interface Donation {

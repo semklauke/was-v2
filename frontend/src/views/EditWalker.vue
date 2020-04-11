@@ -130,6 +130,26 @@
                             </optgroup>
                         </b-form-select>
                     </b-form-group>
+                    <b-form-group
+                        id="WAS_edit_walker_form_course_g"
+                        label="Kurs"
+                        label-for="WAS_edit_walker_form_course"
+                        label-align="left"
+                        v-if="walker.class == 'EPH' || walker.class == 'Q1' || walker.class == 'Q2'"
+                    >
+                        <b-form-select
+                            id="WAS_edit_walker_form_course" 
+                            v-model="walker.course" 
+                            class="not-empty"
+                            @input="updateWalkerState('course')"
+                        >  
+                            <option value="null">-</option>
+                            <option value="DE">Deutsch</option>
+                            <option value="MA">Mathe</option>
+                            <option value="EN">English</option>
+                            <option value="PA">Paedagogik</option>
+                        </b-form-select>
+                    </b-form-group>
                 </b-col>
                 <b-col cols="6" xl="3">
                     <b-form-group
@@ -276,7 +296,8 @@ export default {
                 distance_m: false,
                 lastname: false,
                 firstname: false,
-                participates: false
+                participates: false,
+                course: false
             },
             donations: null,
             new_donations: [],
@@ -500,6 +521,10 @@ export default {
             let promises = [];
             if (walkerDirty) {
                 let reqUrl = "/api/walker/" + parseInt(this.$route.params.id);
+                if (this.walker.class != "EPH" || this.walker.class != "Q1" || this.walker.class != "Q2") {
+                    this.walker.course = null;
+                    walkerUpdate.course = null;
+                }
                 let put_data = {
                     walker: walkerUpdate
                 };
