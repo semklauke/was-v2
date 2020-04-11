@@ -15,7 +15,7 @@ import { Walker, Donation, SQL, WalkerTransfer } from './../../types'
 // sql querys
 const sql_walkerAll: SQL = `
     SELECT walkers.*, 
-    (SELECT COUNT(*) FROm donations WHERE walker_id = walkers.rec_id) as donation_count 
+    (SELECT COUNT(*) FROM donations WHERE walker_id = walkers.rec_id) as donation_count 
     FROM walkers
     ORDER BY walkers.firstname DESC, walkers.lastname DESC, 
     walkers.class DESC, walkers.distance_m DESC;        
@@ -71,6 +71,8 @@ r.post('/', secure, bodyParser.json(), function(req, res){
     }
 
     let w: Walker = req.body.walker;
+    if (w.course === undefined || (w.course && (w.course == "null" || w.course == "")))
+        w.course = null;
 
     // check for dulicate
     if (req.body.force_duplicate == undefined || req.body.force_duplicate == false) {
@@ -87,7 +89,7 @@ r.post('/', secure, bodyParser.json(), function(req, res){
         }
     }
     
-    const walker_id: number = DB().insert('walkers', w, ['class', 'firstname', 'lastname', 'distance_m', 'participates']);
+    const walker_id: number = DB().insert('walkers', w, ['class', 'firstname', 'lastname', 'distance_m', 'participates', 'course']);
     //@ts-ignore
     logger.info("Walker %s added by %s", w.firstname+" "+w.lastname, req.user.name);
     
@@ -148,6 +150,9 @@ r.put('/:walker_id', secure, bodyParser.json(), function(req, res){
     logger.http("PUT api.walker /%d (:walker_id)", walker_id);
 
     if (req.body.walker && req.body.walker != {}) {
+        if (req.body.walker.course && (req.body.walker.course == "null" || req.body.walker.course == ""))
+            req.body.walker.course = undefined;
+        
         DB().updateWithBlackList('walkers', req.body.walker, { rec_id: walker_id }, ['rec_id']);
         //@ts-ignore
         logger.info("Walker (%d) updated by %s", walker_id, req.user.name);
