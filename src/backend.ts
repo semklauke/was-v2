@@ -47,18 +47,18 @@ app.use(passport.session());
 
 // db setup + express start
 try {
-    const migrationForce: boolean = true;
     logger.app('Open SQLite database at %s', config.db);
+    const mig = config.debug == true ? 'last' : false;
     DB({
         path: path.join(__dirname, config.db),
         migrate: {
-            force: 'last',
+            force: mig,
             table: 'migration',
             migrationsPath: path.join(__dirname, 'migrations')
         }
     });
     DB().defaultSafeIntegers(false);       
-    logger.app('Migrating database. force=%s', migrationForce);
+    logger.app('Migrating database. force=%s', mig);
 
     logger.app('Reading ssl key and cert from ', config.ssl);
     let key = fs.readFileSync(config.ssl.key);
