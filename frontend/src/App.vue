@@ -5,6 +5,7 @@
         <b-collapse is-nav id="WAS_mainNaBarCollapseWrapper">
             <b-navbar-nav >
                 <b-nav-item :to="{ name: 'edit' }">Edit</b-nav-item>
+                <b-nav-item :to="{ name: 'new-walker' }">New</b-nav-item>
                 <b-nav-item :to="{ name: 'overview' }">Overview</b-nav-item>
                 <b-nav-item :to="{ name: 'walker' }">Walker</b-nav-item>
                 <b-nav-item :to="{ name: 'admin' }">Admin</b-nav-item>
