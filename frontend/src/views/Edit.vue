@@ -72,9 +72,9 @@ export default {
                 if (dist > 0) return "circle-fill";
                 else return "circle";
             } else if (part == 2) {
-                return "circle-slash"
+                return "x-circle"
             } else if (part == 0) {
-                return "alert-circle-fill"
+                return "exclamation-circle-fill"
             }
         },
         scrolldown() {
@@ -229,7 +229,7 @@ body {
 }
 
 .bi-circle,
-.bi-circle-slash {
+.bi-x-circle {
     color: #555555;
 }
 
@@ -237,7 +237,7 @@ body {
     color: var(--success);
 }
 
-.bi-alert-circle-fill {
+.bi-exclamation-circle-fill {
     color: var(--danger);
 }
 

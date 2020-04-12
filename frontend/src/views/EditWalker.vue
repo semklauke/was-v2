@@ -31,7 +31,7 @@
     <div v-if="walker" id="WAS_edit_walker" class="">
         <div id="WAS_edit_toolar">
             <b-button variant="outline-primary" size="sm" @click="save(fetchData())">
-                <b-icon icon="documents" v-if="saveing == 0"></b-icon>
+                <b-icon icon="file-earmark-text" v-if="saveing == 0"></b-icon>
                 <b-icon icon="check" v-if="saveing == 2"></b-icon>
                 <b-spinner small v-if="saveing == 1"></b-spinner>  
                  Save
@@ -66,7 +66,7 @@
                 <b-col cols="6" xl="3">
                     <b-form-group
                         id="WAS_edit_walker_form_lastname_g"
-                        label="Vorname"
+                        label="Nachname"
                         label-for="WAS_edit_walker_form_lastname"
                         label-align="left"
                     >
@@ -83,7 +83,7 @@
                 <b-col cols="6" xl="3">
                     <b-form-group
                         id="WAS_edit_walker_form_class_g"
-                        label="Vorname"
+                        label="Klasse"
                         label-for="WAS_edit_walker_form_class"
                         label-align="left"
                     >
@@ -249,7 +249,7 @@
             </b-button>
 
             <b-button variant="primary" @click="saveSaveModal">
-                <b-icon icon="documents" v-if="saveing == 0"></b-icon>
+                <b-icon icon="file-earmark-text" v-if="saveing == 0"></b-icon>
                 <b-icon icon="check" v-if="saveing == 2"></b-icon>
                 <b-spinner small v-if="saveing == 1"></b-spinner>  
                  SPEICHERN

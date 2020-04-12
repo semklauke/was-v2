@@ -17,6 +17,7 @@
     <transition
         enter-active-class="animated fadeIn faster"
         leave-active-class="animated fadeOut faster"
+        mode="out-in"
     >
         <router-view></router-view>
     </transition>
@@ -78,7 +79,7 @@ nav {
 
 .router-link-active, .nav-item a:active, .nav-item a:focus {
     background-position: 0 100% !important;
-    box-shadow: inset 1px 1px 8px 1px rgba(0,65,134,0.50);
+    /*box-shadow: inset 1px 1px 8px 1px rgba(0,65,134,0.50);*/
     color: white !important;
 }
 
