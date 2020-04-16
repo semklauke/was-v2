@@ -26,6 +26,7 @@ import { initAuthentication, secure, secureFrontend } from './includes/authentic
 // important globals
 const app: express.Express = express();
 let server: https.Server;
+let server6: https.Server;
 let io: socketio.Server;
 
 // express setup
@@ -65,11 +66,19 @@ try {
     let cert = fs.readFileSync(config.ssl.cert);
     sslOptions = { key, cert };
 
-    logger.app('Starting node https server');
-    server = https.createServer(sslOptions, app).listen({ port }, () => {
-        logger.app('-------- SERVER IS RUNNING --------');
-        logger.app('at: https://localhost:%d', port);
+    logger.app('Starting node https server on ipv4 and ipv6');
+
+    server = https.createServer(sslOptions, app).listen(port, config.ip.ipv4, () => {
+        logger.app('-------- IPv4 SERVER IS RUNNING --------');
+        logger.app('at: https://%s:%d', config.ip.ipv4, port);
     });
+
+    if (config.ipv6) {
+        server6 = https.createServer(sslOptions, app).listen(port, config.ip.ipv6, () => {
+            logger.app('-------- IPv6 SERVER IS RUNNING --------');
+            logger.app('at: https://[%s]:%d', config.ip.ipv6, port);
+        });
+    }
 
     logger.app("Init Authentication with passport");
         initAuthentication(passport);

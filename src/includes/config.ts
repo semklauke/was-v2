@@ -19,6 +19,15 @@ export default {
         "key" : path.join('keys', 'key.pem')
     },
 
+    // make service available via ipv4 AND ipv6
+    "ipv6": true,
+
+    // the ip the service is accessed by
+    "ip": {
+        "ipv4": "0.0.0.0",
+        "ipv6": "0000:0000:0000:0000:0000:0000:0000:0000",
+    },
+
     // password for the front end side. pls change this
     "password" : "abcd",
 
