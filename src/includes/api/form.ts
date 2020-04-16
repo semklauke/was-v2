@@ -17,6 +17,8 @@ export const router: express.Router = express.Router();
 
 //
 function numberToSringDE(x: number) : string {
+    if (x === 0 || x === 0.0 || x == 0 || x == 0.0)
+        return "Null Euro";
     let vor_komma: SpellNumber = new SpellNumber(Math.floor(x));
     let s: string = vor_komma.spell() + " Euro";
     if (x - Math.floor(x) > 0) {
@@ -42,7 +44,7 @@ const sql_donations: SQL = `
         d.lastname AS lastname 
     FROM donations AS d 
     LEFT JOIN walkers 
-        ON d.walkers_id = walkers.rec_id 
+        ON d.walker_id = walkers.rec_id 
     WHERE 
         d.needs_donation_receipt = 1 
         AND donation_received = 1 
@@ -65,7 +67,7 @@ const sql_donations_course: SQL = `
         d.lastname AS lastname 
     FROM donations AS d 
     LEFT JOIN walkers 
-        ON d.walkers_id = walkers.rec_id 
+        ON d.walker_id = walkers.rec_id 
     WHERE 
         d.needs_donation_receipt = 1 
         AND donation_received = 1 
@@ -140,7 +142,7 @@ router.get('/:class_ident', secureFrontend, function(req, res) {
                     donations: new Array<string>()
                 });
             }
-            data.walker[counter].donations.push(d.firstname+" "+d.lastname);
+            data.walker[counter].donations.push(d.firstname+" "+d.lastname+" ("+money+")");
             data.forms.push(form);
         }
     }
@@ -197,7 +199,7 @@ router.get('/:class_ident/:course', secureFrontend, function(req, res) {
                     donations: new Array<string>()
                 });
             }
-            data.walker[counter].donations.push(d.firstname+" "+d.lastname);
+            data.walker[counter].donations.push(d.firstname+" "+d.lastname+" ("+money+")");
             data.forms.push(form);
         }
     }

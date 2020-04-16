@@ -25,7 +25,7 @@
                         <span class="km g">(<%= w.distance_m %> m)</span>
                     <% } %>
                 </div>
-                <div class="g money col-xs-2 sum <% if (w.sum != s.minsum ) { %> more <% } %>"><%= w.sum.toFixed(2) %> €
+                <div class="g money col-xs-2 sum <% if (w.sum != w.minsum ) { %> more <% } %>"><%= w.sum.toFixed(2) %> €
                     <span class="g money sum-dash">/</span>
                 </div>
                 <div class="g money col-xs-2 min-sum"><%= w.minsum.toFixed(2) %> €</div>
@@ -36,7 +36,7 @@
                 <span class="col-xs-7 spender_name g">
                     <%= d.getName() %> (<%= d.donation_each_km.toFixed(2) %> €)
                 </span>
-                <div class="spender_money g col-xs-2 sum <% if (sp.sum != sp.minsum ) { %> more <% } %>"><%= d.sum.toFixed(2) %> €
+                <div class="spender_money g col-xs-2 sum <% if (d.sum != d.minsum ) { %> more <% } %>"><%= d.sum.toFixed(2) %> €
                     <span class="spender_money g sum-dash">/</span>
                 </div>
                 <div class="spender_money g col-xs-2 min-sum"><%= d.minsum.toFixed(2) %> €</div>

@@ -91,7 +91,7 @@
 <body style="margin: 0;">
 
 <div id="front_page">
-    <h1><%= titel %></h1>
+    <h1><%= title %></h1>
     <% walker.forEach(function(w){ %>
         <div class="l-name">
             <%= w.name %>
@@ -99,7 +99,7 @@
         <div class="sp-box">
         <% w.donations.forEach(function(d){ %>
             <div class="sp-name">
-                <%= d.name %>(<%= d.sum %>)
+                <%= d %>
             </div>
         <% }); %>
         </div>
@@ -113,7 +113,7 @@
     <iframe scrolling="no" src="/static/donation_recived/spenden_form.html" width="909px" height="1286px" frameborder="0"></iframe>
     <div class="frame_content">
         <div class="name_and_adress">
-            <%= f.name %>, <%= f.address %>
+            <%= f.getName() %>, <%= f.address %>
         </div>
         <div class="money">
             <%= f.money.toString().replace(".", ",") %> €
