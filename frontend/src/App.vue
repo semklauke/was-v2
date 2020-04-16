@@ -9,6 +9,7 @@
                 <b-nav-item :to="{ name: 'overview' }">Overview</b-nav-item>
                 <b-nav-item :to="{ name: 'walker' }">Walker</b-nav-item>
                 <b-nav-item :to="{ name: 'admin' }">Admin</b-nav-item>
+                <b-nav-item :to="{ name: 'post' }">Postprocessing</b-nav-item>
             </b-navbar-nav>
         </b-collapse>
 
