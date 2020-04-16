@@ -36,7 +36,7 @@ router.get('/:class_ident', secureFrontend, function(req, res) {
     logger.http('GET api.class /%s (:class_ident)', class_ident);
 
     let data: ClassRender = {
-        class: class_ident,
+        className: class_ident,
         walker: [],
         sum: 0
     };
@@ -85,7 +85,7 @@ router.get('/:class_ident/:course', secureFrontend, function(req, res) {
 
     let class_title: string = class_ident+" ("+courseToString(course)+")";
     let data: ClassRender = {
-        class: class_title,
+        className: class_title,
         walker: [],
         sum: 0
     };

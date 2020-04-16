@@ -65,7 +65,7 @@ interface WalkerRender extends Walker {
 }
 
 interface ClassRender {
-    class: string,
+    className: string,
     walker: WalkerRender[],
     sum: number,
     minsum?: number
