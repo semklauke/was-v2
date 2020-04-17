@@ -1,15 +1,17 @@
 {
   "name": "was-v2",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Walking and Sponsoring donation and walker tracking + postprocessing",
   "main": "backend.js",
   "scripts": {
     "tsc": "tsc -b",
-    "tsc-clean": "rm ./backend*; rm -rf ./includes; rm -rf ./static/js",
-    "log-clean": "rm -rf ./log",
-    "clean": "npm run tsc-clean; npm run log-clean;",
-    "run": "tsc -b; node backend.js",
-    "ssl": "mkdir keys; openssl req -x509 -nodes -newkey rsa:2048 -keyout key.pem -out cert.pem -days 30"
+    "clean": "node scripts/clean.js",
+    "ssl": "node scripts/ssl.js",
+    "ssl-openssl": "mkdir keys; openssl req -x509 -nodes -newkey rsa:2048 -keyout keys/key.pem -out keys/cert.pem -days 30",
+    "frontend-setup" : "cd frontend && npm install && npm run build",
+    "config": "node scripts/config.js",
+    "start": "node backend.js",
+    "prestart": "tsc -b"
   },
   "repository": {
     "type": "git",
@@ -39,16 +41,18 @@
     "express": "^4.17.1",
     "express-session": "^1.17.0",
     "integer": "^2.1.0",
+    "mkdirp": "^1.0.4",
+    "node-forge": "^0.9.1",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
+    "prompts": "^2.3.2",
+    "rimraf": "^3.0.2",
     "socket.io": "^2.3.0",
+    "typescript": "^3.8.3",
     "uuid": "^3.4.0",
     "winston": "^3.2.1",
     "winston-better-sqlite3": "https://github.com/semklauke/winston-better-sqlite3/tarball/master",
     "winston-timestamp-colorize": "^1.0.4"
   },
-  "devDependencies": {
-    "npx": "^10.2.1",
-    "typescript": "^3.8.3"
-  }
+  "devDependencies": {}
 }

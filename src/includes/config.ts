@@ -8,10 +8,10 @@ export default {
     "log_folder" : "log",
 
     // is the appliaction in debbuging mode (true/false)
-    "debug" : true,
+    "debug" : false,
 
     // port the backend server is running on
-    "port" : 3000,
+    "port" : 443,
 
     // paths to the ssl private key and certificate, relative to the project root
     "ssl" : {
@@ -46,3 +46,4 @@ export default {
         "default_city" : "Soest"
     }
 };
+    
