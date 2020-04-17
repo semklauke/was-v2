@@ -35,7 +35,7 @@
             <b-form-input id="WAS_username_input" name="username"></b-form-input>
         </b-form-group>
         <b-form-group label-cols="4" label-cols-lg="2" label="Password" label-for="WAS_password_input">
-            <b-form-input id="WAS_password_input" name="password"></b-form-input>
+            <b-form-input id="WAS_password_input" name="password" type="password"></b-form-input>
         </b-form-group>
         <b-row>
             <b-col cols="10" col-sm="6"></b-col>
