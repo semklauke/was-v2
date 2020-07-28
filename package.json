@@ -8,7 +8,7 @@
     "clean": "node scripts/clean.js",
     "ssl": "node scripts/ssl.js",
     "ssl-openssl": "mkdir keys; openssl req -x509 -nodes -newkey rsa:2048 -keyout keys/key.pem -out keys/cert.pem -days 30",
-    "frontend-setup" : "cd frontend && npm install && npm run build",
+    "frontend-setup": "cd frontend && npm install && npm run build",
     "config": "node scripts/config.js",
     "start": "node backend.js",
     "prestart": "tsc -b"
@@ -46,6 +46,7 @@
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "prompts": "^2.3.2",
+    "puppeteer": "^5.2.1",
     "rimraf": "^3.0.2",
     "socket.io": "^2.3.0",
     "typescript": "^3.8.3",
