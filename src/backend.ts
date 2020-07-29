@@ -123,6 +123,9 @@ app.use('/post/final', post_production_class_final);
 import { router as post_production_form } from './includes/api/form';
 app.use('/post/form', post_production_form);
 
+import { router as post_production_download } from './includes/api/download';
+app.use('/post/download', post_production_download);
+
 // serve vue frontend
 app.get('*', secureFrontend, function(req, res){
     res.sendFile(path.resolve(__dirname, config.frontend_folder, 'index.html'));  
