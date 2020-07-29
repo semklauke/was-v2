@@ -120,3 +120,27 @@ export let secureFrontend: RequestHandler = function(req, res, next)  {
         }));
     }
 }
+
+export let securePost: RequestHandler = function(req, res, next)  {
+    if (req.isAuthenticated()) {
+        next();
+    } else if (req.query.oat && req.query.oat != "") {
+        let check_uuid = DB().queryFirstRow("SELECT * FROM post WHERE uuid = ?", req.query.oat);
+        if (check_uuid && check_uuid.used == null) {
+            // access should be granted
+            logger.http("User "+check_uuid.name+" ("+check_uuid.login_uuid+") used oat "+check_uuid.uuid+" on "+ check_uuid.rescource);
+            DB().prepare("UPDATE postprocessing SET used = datetime('now') WHERE rec_id = ?")
+                .run(check_uuid.rec_id);
+            next();
+        } else {
+            res.status(401).json({ error: "Not logged in", errorid: 333 });
+        }
+    } else {
+        res.redirect(303, url.format({
+            pathname: "/login",
+            query: {
+                info: 'l'
+            }
+        }));
+    }
+}
