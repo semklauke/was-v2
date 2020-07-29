@@ -39,6 +39,7 @@ router.get('/:class_ident', secureFrontend, function(req, res) {
         className: class_ident,
         walker: [],
         sum: 0,
+        pdf: false,
         minsum: 0
     };
 
@@ -94,6 +95,7 @@ router.get('/:class_ident/:course', secureFrontend, function(req, res) {
         className: class_title,
         walker: [],
         sum: 0,
+        pdf: false,
         minsum: 0
     };
 

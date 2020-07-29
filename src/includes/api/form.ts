@@ -3,7 +3,7 @@
 /// <reference types="better-sqlite3"/>
 
 import express from 'express';
-import { secure, secureFrontend } from './../authentication';
+import {secureFrontend, securePost } from './../authentication';
 import sqlite from 'better-sqlite3';
 import DB from 'better-sqlite3-helper';
 import bodyParser from 'body-parser';
@@ -27,6 +27,8 @@ function numberToSringDE(x: number) : string {
     }
     return s;
 }
+
+const money_threshold: number = 0.0;
 
 // sql querys
 const sql_donations: SQL = `
@@ -95,7 +97,7 @@ type Form = {
 
 // routes
 
-router.get('/:class_ident', secureFrontend, function(req, res) {
+router.get('/:class_ident', securePost, function(req, res) {
 
     let class_ident: string = req.params.class_ident.toUpperCase();
     logger.http('GET api.form /%s (:class_ident)', class_ident);
@@ -104,7 +106,8 @@ router.get('/:class_ident', secureFrontend, function(req, res) {
     let data = {
         title,
         walker: new Array<FormWalker>(),
-        forms: new Array<Form>()
+        forms: new Array<Form>(),
+        pdf: false
     };
 
     let walker_id: number = -1;
@@ -113,7 +116,7 @@ router.get('/:class_ident', secureFrontend, function(req, res) {
     let donationStmt: sqlite.Statement = DB().prepare(sql_donations);
     for (let d of donationStmt.iterate("%"+class_ident)) {
         let money: number = round(parseFloat(d.donation_amount_received)); 
-        if (money >= 10.0) {
+        if (money >= money_threshold) {
             let printDate: string;
             if (config.print_date == null) {
                 let today: Date = new Date();
@@ -146,12 +149,12 @@ router.get('/:class_ident', secureFrontend, function(req, res) {
             data.forms.push(form);
         }
     }
-
+    
     res.render('form', data);
 
 });
 
-router.get('/:class_ident/:course', secureFrontend, function(req, res) {
+router.get('/:class_ident/:course', securePost, function(req, res) {
 
     let class_ident: string = req.params.class_ident.toUpperCase();
     let course: string = req.params.course.toUpperCase();
@@ -161,7 +164,8 @@ router.get('/:class_ident/:course', secureFrontend, function(req, res) {
     let data = {
         title,
         walker: new Array<FormWalker>(),
-        forms: new Array<Form>()
+        forms: new Array<Form>(),
+        pdf: false
     };
 
     let walker_id: number = -1;
@@ -170,7 +174,7 @@ router.get('/:class_ident/:course', secureFrontend, function(req, res) {
     let donationStmt: sqlite.Statement = DB().prepare(sql_donations_course);
     for (let d of donationStmt.iterate("%"+class_ident, course)) {
         let money: number = round(parseFloat(d.donation_amount_received)); 
-        if (money >= 10.0) {
+        if (money >= money_threshold) {
             let printDate: string;
             if (config.print_date == null) {
                 let today: Date = new Date();

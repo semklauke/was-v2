@@ -2,10 +2,10 @@
 /* CSS Document */
 
 hr.style-one {
-	border: 0;
-    height: 1px;
-    background: #333;
-    background-image: linear-gradient(to right, #ccc, #333, #ccc);
+	border-image: -webkit-linear-gradient(to right, #ccc, #333, #ccc);
+	border-color: #333;
+    /*background-image: -webkit-linear-gradient(to right, #ccc, #333, #ccc);
+    background-image: */
 }
 #mainContainer {
 	
@@ -124,11 +124,20 @@ hr.style-three {
 	font-weight: 800;	
 }
 
-.glyphicon-chevron-right {
+.glyphicon-chevron-right,
+.chevron {
 	position: relative;
 	left: 15px;
 	font-size: 0.8em;
 	top: 4px;
+}
+
+.chevron {
+	font-size: 15px;
+	max-height: 15px;
+	color: rgb(92, 92, 92);
+	line-height: 17px;
+	top: -1px;
 }
 
 .summe, .summe-number {

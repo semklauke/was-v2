@@ -38,7 +38,8 @@ router.get('/:class_ident', secureFrontend, function(req, res) {
     let data: ClassRender = {
         className: class_ident,
         walker: [],
-        sum: 0
+        sum: 0,
+        pdf: false
     };
 
     let walkerStmt: sqlite.Statement = DB().prepare(sql_walker_for_class);
@@ -87,7 +88,8 @@ router.get('/:class_ident/:course', secureFrontend, function(req, res) {
     let data: ClassRender = {
         className: class_title,
         walker: [],
-        sum: 0
+        sum: 0,
+        pdf: false
     };
 
     let walkerStmt: sqlite.Statement = DB().prepare(sql_walker_for_class_for_course);
