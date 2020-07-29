@@ -1,37 +1,41 @@
 <template>
-<b-container id="WAS_post_container" class="shadow px-5 py-3 mb-5 mt-5 bg-light rounded">
-    <div id="scroll-container">
-        <h3>Klassen formular (zu zahlen)</h3>
-        <div class="ml-10">
-            <b-link v-for="c in classes" :key="'class'+c" :href="'/post/class/'+c">{{ c }}</b-link>
-            <b-link v-for="o in oberstufe" :key="'class'+o" :href="'/post/class/'+o">{{ o }}</b-link>
-        </div>
-        <br />
-        <h3>Zusammenfassung (was gezahlt wurde)</h3>
-        <div class="ml-10">
-            <b-link v-for="c in classes" :key="'final'+c" :href="'/post/final/'+c">{{ c }}</b-link>
-            <b-link v-for="o in oberstufe" :key="'final'+o" :href="'/post/final/'+o">{{ o }}</b-link>
-        </div>
-        <br />
-        <h3>Spendenformulare</h3>
-        <div class="ml-10">
-            <b-link v-for="c in classes" :key="'form'+c" :href="'/post/form/'+c">{{ c }}</b-link>
-            <b-link v-for="o in oberstufe" :key="'from'+o" :href="'/post/from/'+o">{{ o }}</b-link>
-        </div>
-
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-    </div>
+<b-container fluid="lg" id="WAS_post_container">
+    <b-row>
+        <b-col cols="12" md="6" lg="4"
+            v-for="c in classes" 
+            :key="'posttile-'+c"
+        >
+            <was-posttile
+                :class_name="c" 
+                :url="c" 
+                :courses="false" 
+                class="shadow px-3 py-3 ml-2 mr-2 mt-2 mb-2 bg-light rounded"
+            >
+            </was-posttile>
+        </b-col>
+    </b-row>
+    <b-row>
+        <b-col cols="12" md="6" lg="4"
+            v-for="o in oberstufe" 
+            :key="'posttilec-'+o" 
+            
+        >
+            <was-posttile
+                :class_name="o.split('/')[0]+' - '+o.split('/')[1]" 
+                :url="o" 
+                :courses="true" 
+                class="shadow px-3 py-3 ml-2 mr-2 mt-2 mb-2 bg-light rounded"
+            >
+            </was-posttile>
+        </b-col>
+    </b-row>
 </b-container>    
 </template>
 
 
 <script>
 
-
+import WasPosttile from '@/components/was-posttile';
 export default {
     data: function () {
         return {
@@ -40,6 +44,7 @@ export default {
         };
     },
     components: {
+        'was-posttile': WasPosttile
     },
     mounted() {
         let letters = ['A', 'B', 'C', 'D']
