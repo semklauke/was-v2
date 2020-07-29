@@ -1,9 +1,12 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
+    <% if (!pdf) { %>
     <link rel="stylesheet" type="text/css" href="/static/lib/bootstrap/css/bootstrap.min.css" />
     <script type="text/javascript" src="/static/lib/bootstrap/js/bootstrap.min.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/final.css" />
+    <% } %>
     <title>WaS 2020 Klassen Klassen Liste</title>
 </head>
 
@@ -32,7 +35,11 @@
             </div>
             <% w.donations.forEach(function(d) {%>
             <div class="row spender_row g">
+                <% if (pdf) { %>
+                <span class="chevron col-xs-1">&triangleright;</span>
+                <% } else { %>
                 <span class="col-xs-1 glyphicon glyphicon-chevron-right col-xs-1" aria-hidden="true"></span>
+                <% } %>
                 <span class="col-xs-7 spender_name g">
                     <%= d.getName() %> (<%= d.donation_each_km.toFixed(2) %> €)
                 </span>

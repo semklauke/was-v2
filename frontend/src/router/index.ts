@@ -7,6 +7,7 @@ import { RouteConfig } from 'vue-router';
 import Edit from '@/views/Edit.vue';
 import EditWalker from '@/views/EditWalker.vue';
 import NewWalker from '@/views/NewWalker.vue';
+import PostPorcessing from '@/views/PostProcessing.vue';
 const Overview = { template: '<div>Overview</div>' }
 const Walker = { template: '<div>Walker</div>' }
 const Admin = { template: '<div>Admin</div>' }
@@ -25,7 +26,8 @@ const routes: RouteConfig[] = [
     { path: '/new', component: NewWalker, name: 'new-walker' },
     { path: '/overview', component: Overview, name: 'overview' },
     { path: '/walker', component: Walker, name: 'walker' },
-    { path: '/admin', component: Admin, name: 'admin' }
+    { path: '/admin', component: Admin, name: 'admin' },
+    { path: '/post', component: PostPorcessing, name: 'post' },
 ];
 
 const router = new VueRouter({

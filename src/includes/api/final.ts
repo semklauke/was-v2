@@ -3,7 +3,7 @@
 /// <reference types="better-sqlite3"/>
 
 import express from 'express';
-import { secure, secureFrontend } from './../authentication';
+import { securePost } from './../authentication';
 import sqlite from 'better-sqlite3';
 import DB from 'better-sqlite3-helper';
 import bodyParser from 'body-parser';
@@ -30,7 +30,7 @@ const sql_walker_for_class_for_course: SQL = `
 
 // routes
 
-router.get('/:class_ident', secureFrontend, function(req, res) {
+router.get('/:class_ident', securePost, function(req, res) {
 
     let class_ident: string = req.params.class_ident.toUpperCase();
     logger.http('GET api.final /%s (:class_ident)', class_ident);
@@ -39,6 +39,7 @@ router.get('/:class_ident', secureFrontend, function(req, res) {
         className: class_ident,
         walker: [],
         sum: 0,
+        pdf: false,
         minsum: 0
     };
 
@@ -83,7 +84,7 @@ router.get('/:class_ident', secureFrontend, function(req, res) {
     res.render('final', data);
 });
 
-router.get('/:class_ident/:course', secureFrontend, function(req, res) {
+router.get('/:class_ident/:course', securePost, function(req, res) {
 
     let class_ident: string = req.params.class_ident.toUpperCase();
     let course: string = req.params.course.toUpperCase();
@@ -94,6 +95,7 @@ router.get('/:class_ident/:course', secureFrontend, function(req, res) {
         className: class_title,
         walker: [],
         sum: 0,
+        pdf: false,
         minsum: 0
     };
 

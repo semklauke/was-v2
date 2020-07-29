@@ -68,6 +68,7 @@ interface ClassRender {
     className: string,
     walker: WalkerRender[],
     sum: number,
+    pdf: boolean,
     minsum?: number
 }
 
