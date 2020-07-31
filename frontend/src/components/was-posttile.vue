@@ -8,7 +8,10 @@
            :ok-disabled="true"
     >
         <p class="my-4">
-            <a class="posttile_a" :href="downloadlink" download>Download</a>
+            <span v-if="loading" class="d-flex">
+                <b-spinner variant="primary"></b-spinner>
+            </span>
+            <a v-else class="posttile_a" :href="downloadlink" download>Download</a>
         </p>
     </b-modal>
     <h3>{{ class_name }}</h3>
@@ -21,12 +24,7 @@
         >Anzeigen</b-button>
         <span class="was_filler"></span>
         <b-button variant="primary" @click="download('/post/class/')" class="ml-3 posttile_btn mb-4">
-            <span v-if="loading" class="d-flex">
-                <b-spinner variant="primary"></b-spinner>
-            </span>
-            <span v-else>
-                Download
-            </span>
+            Download
         </b-button>
         <br />
         <h5>Liste (ausgefüllt)</h5>
@@ -36,13 +34,8 @@
                    class="mr-3 posttile_btn mb-4"
         >Anzeigen</b-button>
         <span class="was_filler"></span>
-        <b-button variant="primary" @click="download('/post/final/')" class="ml-3 posttile_btn mb-4§§§">
-            <span v-if="loading" class="d-flex">
-                <b-spinner variant="primary"></b-spinner>
-            </span>
-            <span v-else>
-                Download
-            </span>
+        <b-button variant="primary" @click="download('/post/final/')" class="ml-3 posttile_btn mb-4§">
+            Download
         </b-button>
         <br />
         <h5>Spendenformulare</h5>
@@ -53,12 +46,7 @@
         >Anzeigen</b-button>
         <span class="was_filler"></span>
         <b-button variant="primary" @click="download('/post/form/')" class="ml-3 posttile_btn">
-            <span v-if="loading" class="d-flex">
-                <b-spinner variant="primary"></b-spinner>
-            </span>
-            <span v-else>
-                Download
-            </span>
+            Download
         </b-button>
 
     </div>
@@ -83,9 +71,12 @@ export default Vue.extend({
     },
     methods: {
         download(baseurl) {
+            //this.$root.socket.connected
             this.loading = true;
             this.$root.axios.post("/post/download", {
-                url: baseurl+this.url
+                url: baseurl+this.url,
+                ref: this.url,
+                soiid: this.$root.socket.id
             }).then(res => {
                 if (res.status != 200) {
                     alert("Download Error occured. check with admin pls");
@@ -96,7 +87,6 @@ export default Vue.extend({
                     } else {
                         this.downloadlink = 
                             window.location.protocol + "//" + window.location.hostname + res.data.pdfurl;
-                        this.loading = false; 
                         this.$bvModal.show('ptmd-'+this.class_name);
                     }
                 }
@@ -106,6 +96,9 @@ export default Vue.extend({
                 this.downloadlink = "ERROR";
                 alert("Error. contact admin");
             });
+        },
+        done_loading() {
+            this.loading = false;
         }
     },
     computed: {
@@ -114,6 +107,7 @@ export default Vue.extend({
     mounted() {
         this.$root.$on('bv::modal::hidden', (bvEvent, modalId) => {
             this.downloadlink = "ERROR";
+            this.loading = false;
         });
     }
 });

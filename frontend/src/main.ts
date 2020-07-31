@@ -35,7 +35,4 @@ vm.axios.interceptors.request.use(function (config: any) {
 });
 
 //@ts-ignore
-vm.socket = io();
-
-
-
+vm.socket = io({secure: true, reconnect: true});

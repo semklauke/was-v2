@@ -3,7 +3,7 @@
 
 
 <div id="WAS_edit_walker_wrapper" :key="$route.params.id">
-    <div v-if="error" class="WAS_walker_error" class="row">
+    <div v-if="error" class="WAS_walker_error row">
         <b-col>
             <b-alert show variant="danger">
                 <h4 class="alert-heading">Error Loading Data!</h4>

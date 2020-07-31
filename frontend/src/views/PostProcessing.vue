@@ -9,7 +9,8 @@
                 :class_name="c" 
                 :url="c" 
                 :courses="false" 
-                class="shadow px-3 py-3 ml-2 mr-2 mt-2 mb-2 bg-light rounded"
+                class="shadow px-3 py-3 ml-2 mr-2 mt-2 mb-2 bg-light rounded" 
+                :ref="c"
             >
             </was-posttile>
         </b-col>
@@ -24,7 +25,8 @@
                 :class_name="o.split('/')[0]+' - '+o.split('/')[1]" 
                 :url="o" 
                 :courses="true" 
-                class="shadow px-3 py-3 ml-2 mr-2 mt-2 mb-2 bg-light rounded"
+                class="shadow px-3 py-3 ml-2 mr-2 mt-2 mb-2 bg-light rounded" 
+                :ref="o"
             >
             </was-posttile>
         </b-col>
@@ -46,7 +48,13 @@ export default {
     components: {
         'was-posttile': WasPosttile
     },
+    created() {
+        this.$root.socket.on('post_progress_done', ref => {
+            this.$refs[ref][0].done_loading();
+        });
+    },
     mounted() {
+        this.classes = [];
         let letters = ['A', 'B', 'C', 'D']
         for (let i = 5; i < 10; i++) {
             for (let l of letters)
