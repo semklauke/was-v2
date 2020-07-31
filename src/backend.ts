@@ -124,7 +124,7 @@ import { router as post_production_form } from './includes/api/form';
 app.use('/post/form', post_production_form);
 
 import { router as post_production_download } from './includes/api/download';
-app.use('/post/download', post_production_download);
+app.use('/post/download', post_production_download(io));
 
 // serve vue frontend
 app.get('*', secureFrontend, function(req, res){

@@ -14,24 +14,27 @@ import config from './../config';
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
 import puppeteer from 'puppeteer';
+import socketio from 'socket.io';
 
 
 // init router
-export const router: express.Router = express.Router();
+export function router(io: socketio.Server) : express.Router {
+
+const r: express.Router = express.Router();
 
 // sql querys
 
 // routes
 
-router.post('/', secure, bodyParser.json(), function(req, res) {
+r.post('/', secure, bodyParser.json(), function(req, res) {
 
     res.connection.setTimeout(20000);
     logger.http('GET api.download /');
 
     // generate ota, write into database
-    if (!req.body.url) {
-        logger.warn("GET api.download / url object missing in request");
-        res.status(400).json({ error: 'add url to request', errorid: 143 });
+    if (!req.body.url || !req.body.soiid || !req.body.ref) {
+        logger.warn("GET api.download / url/soiid/ref object missing in request");
+        res.status(400).json({ error: 'add url/soiid/ref to request', errorid: 143 });
         return;
     }
 
@@ -69,8 +72,12 @@ router.post('/', secure, bodyParser.json(), function(req, res) {
             }
         });    
         await browser.close();
-        console.log("done");
+        io.to(req.body.soiid).emit('post_progress_done', req.body.ref);
     })();
     // send back link to pdf download
     res.status(200).json({ success: "success", pdfurl: "/static/pdfs/"+oat+".pdf" });
 });
+
+return r;
+
+};

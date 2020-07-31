@@ -128,7 +128,7 @@ export let securePost: RequestHandler = function(req, res, next)  {
         let check_uuid = DB().queryFirstRow("SELECT * FROM post WHERE uuid = ?", req.query.oat);
         if (check_uuid && check_uuid.used == null) {
             // access should be granted
-            logger.http("User "+check_uuid.name+" ("+check_uuid.login_uuid+") used oat "+check_uuid.uuid+" on "+ check_uuid.rescource);
+            logger.http("User "+check_uuid.name+" ("+check_uuid.login_uuid+") used oat "+check_uuid.uuid+" on "+ check_uuid.resource);
             DB().prepare("UPDATE postprocessing SET used = datetime('now') WHERE rec_id = ?")
                 .run(check_uuid.rec_id);
             next();

@@ -2054,7 +2054,7 @@ stroke-linejoin: miter;
 <use xlink:href="#f0_i" transform="matrix(10,0,0,10,472.8,1194.3)" />
 </g>
 </g>
-<image x="694" y="97" width="119" height="217" xlink:href="img/1.png" />
+<image x="694" y="97" width="119" height="217" xlink:href="/static/images/spenden_form.png" />
 <defs>
 	<path d="M429.3,0L6.1,1092.4l155.8,0L446.1,297.9c0,0,35.2,-94.7,58.1,-178.7c0,0,25.9,90.1,59.6,178.7l294.8,794.5l148.2,0L577.5,0Z" 
 	id="f0_1m"
