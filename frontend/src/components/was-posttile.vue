@@ -34,7 +34,7 @@
                    class="mr-3 posttile_btn mb-4"
         >Anzeigen</b-button>
         <span class="was_filler"></span>
-        <b-button variant="primary" @click="download('/post/final/')" class="ml-3 posttile_btn mb-4§">
+        <b-button variant="primary" @click="download('/post/final/')" class="ml-3 posttile_btn mb-4">
             Download
         </b-button>
         <br />
