@@ -97,3 +97,30 @@ input[type=number] {
 }
 
 </style>
+
+<script>
+export default {
+    data: function () {
+        return {
+            socketio_heartbeat_toggle: false
+        };
+    },
+    mounted() {
+        if (!this.socketio_heartbeat_toggle) {
+            this.socketio_heartbeat_toggle = true;
+            this.socketio_heartbeat();
+        }
+    },
+    methods: {
+        socketio_heartbeat() {
+            if (this.$root.socket)
+                this.$root.socket.emit('heartbeat');
+                if (!this.socketio_heartbeat_toggle)
+                    setTimeout(this.socketio_heartbeat, 12 * 1000);
+            else
+                setTimeout(this.socketio_heartbeat, 1.5 * 1000);
+        }
+    }
+};
+
+</script>

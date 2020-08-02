@@ -163,6 +163,8 @@ function initSocket(socket: socketio.Socket) : void {
 
     });
 
+    socket.on('heartbeat', () => {});
+
 }
 
 
