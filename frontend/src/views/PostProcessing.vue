@@ -43,7 +43,7 @@
                 >
                     <p class="my-4 loading_container">
                         <div v-if="loading" class="d-flex">
-                            <b-spinner variant="primary"></b-spinner><br /><br />
+                            <b-spinner variant="primary" class="download_all_spinner">In progress...</b-spinner>
                             <b-progress :value="progress_value" :max="progress_max" show-progress
                             class="w-100"></b-progress>
                         </div>
@@ -193,6 +193,10 @@ body {
 }
 
 .loading_container {
+    text-align: center;
+}
+.download_all_spinner {
+    display: block;
     text-align: center;
 }
 .posttile_btn_alle {
