@@ -84,6 +84,12 @@ const questions = [
         message: "Druckdatum, welches auf die Spendenquittungen geschrieben wird (null = Datum des abrufes der webseite): ",
         initial: c.print_date === null ? 'null' : c.print_date 
 
+    },
+    {
+        type: 'number',
+        name: "donation_receipt_threshold",
+        message: "Ab welchem Geldbetrag wird eine Spendenquittung ausgestellt: ",
+        initial: c.donation_receipt_threshold
     }
 ];
 
@@ -135,6 +141,9 @@ export default {
     // default print date printet on the donation receipt
     // null means the current date of the access  
     "print_date" : ${ response.print_date === 'null' ? 'null' : '"'+response.print_date+'"' },
+
+    // threshold, from which donation amout on, donation receipts will be generated
+    "donation_receipt_threshold": ${ response.donation_receipt_threshold },
 
     frontend : {
         "default_zipcode" : "59494",

@@ -41,6 +41,9 @@ export default {
     // null means the current date of the access  
     "print_date" : null,
 
+    // threshold, from which donation amout on, donation receipts will be generated
+    "donation_receipt_threshold": 10.0,
+
     frontend : {
         "default_zipcode" : "59494",
         "default_city" : "Soest"
