@@ -60,7 +60,9 @@ export default {
             if (res.status == 200) {
                 this.walker = res.data.walker;
             } else {
-                console.error(res.status+": error "+(res.data.error?res.data.error:"")+(res.data.errorid?res.data.errorid:""));
+                console.error(
+                    res.status+": error "+(res.data.error?res.data.error:"")+(res.data.errorid?res.data.errorid:"")
+                );
             }
         }).catch(function(err) {
             console.log(err);

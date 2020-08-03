@@ -175,7 +175,7 @@
                     <b-form-group
                         id="WAS_edit_walker_form_distance_g"
                         label="Distanz gelaufen"
-                        label-for="WAS_edit_walker_form_distance"
+                        label-for="WAS_edit_walker_form_distance_m"
                         label-align="left"
                     >
                         <b-input-group
@@ -418,7 +418,7 @@ export default {
             });
         },
         applyDistance: function(dis) {
-            document.getElementById("WAS_edit_walker_form_distance").value = dis;
+            document.getElementById("WAS_edit_walker_form_distance_m").value = dis;
         },
         deleteState: function() {
             for (let w in this.state_walker) {
