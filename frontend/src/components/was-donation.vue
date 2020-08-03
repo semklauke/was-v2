@@ -251,6 +251,7 @@ export default Vue.extend({
             let context = this;
             this.$nextTick(function () {
                 context.donation_state[key] = true;
+                //this.$emit('update:donation', [key, context.donation[key]]);
             });
         },
         displayState: function() {

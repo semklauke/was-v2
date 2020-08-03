@@ -30,7 +30,7 @@
     </div>
     <div v-if="walker" id="WAS_edit_walker" class="">
         <div id="WAS_edit_toolar">
-            <b-button variant="outline-primary" size="sm" @click="save(fetchData())">
+            <b-button variant="outline-primary" size="sm" @click="save(fetchData)">
                 <b-icon icon="file-earmark-text" v-if="saveing == 0"></b-icon>
                 <b-icon icon="check" v-if="saveing == 2"></b-icon>
                 <b-spinner small v-if="saveing == 1"></b-spinner>  
@@ -206,8 +206,8 @@
                 v-for="(d, d_index) in donations"
                 :key="d.rec_id"
                 fetch="false"
-                :donation.sync="d"
-                :donation_state.sync="state_donations[d_index]"
+                :donation.sync="donations[d_index]"
+                :donation_state.sync="state_donations[d_index]" 
                 :walker_id="walker.rec_id"
                 :donation_index="d_index"
                 :isNew="false"
@@ -219,7 +219,7 @@
                 v-for="(d, d_index) in new_donations"
                 :key="d.rec_id"
                 fetch="false"
-                :donation.sync="d"
+                :donation.sync="new_donations[d_index]"
                 :walker_id="walker.rec_id"
                 :donation_index="d_index+(donations.length)"
                 :isNew="true"
@@ -505,7 +505,7 @@ export default {
                 let donationUpdateObjDirty = false;
                 let donationUpdateObj = {};
                 for (let d in sd) {
-                    if (sd[d] === true) {
+                    if (sd[d] === true && d != 'new') {
                         donationUpdateObjDirty = true;
                         donationUpdateObj[d] = this.donations[i][d];
                     }
