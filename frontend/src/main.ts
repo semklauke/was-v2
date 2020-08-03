@@ -24,8 +24,8 @@ vm.axios.interceptors.request.use(function (config: any) {
         return true
     };
     let sid: { [key: string] : string } = cookie.parse(document.cookie);
-    if (sid['connect.id']) {
-        config.headers.cookie += cookie.serialize('connect.id', sid['connect.id'], {
+    if (sid['connect.sid']) {
+        config.headers.cookie += cookie.serialize('connect.sid', sid['connect.sid'], {
             secure: true,
         }) + ";";
     }

@@ -100,6 +100,14 @@ app.get('/login', function(req, res) {
     res.sendFile(path.resolve(__dirname, config.frontend_folder, 'login.html'));
 });
 
+app.get('/logout', function(req, res) {
+    req.logout();
+    let rd = () => { res.redirect('/login') };
+    if (req.session) {
+        req.session.destroy(rd);
+    } else
+        rd();
+})
 app.post('/login', 
     passport.authenticate('local', {
         successRedirect: '/',

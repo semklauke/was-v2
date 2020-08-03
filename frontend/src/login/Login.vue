@@ -14,7 +14,7 @@
                 </p>
                 <hr>
                 <p class="mb-0">
-                    In case you were already logged in and stll ended up here. Either
+                    In case you were already logged in and still ended up here. Either
                     <ol>
                         <li>Your last login session expired and you just need to login again.</li>
                         <li>There is an error. If logging in still brings you here, please contact an admin</li>
@@ -40,7 +40,7 @@
         <b-row>
             <b-col cols="10" col-sm="6"></b-col>
             <b-col cols="2" col-sm="6">
-                <b-button variant="primary" type="submit" name="was_login_submit" id="WAS_login_submit">Login</b-button>
+                <b-button variant="primary" type="submit" name="was_login_submit" id="WAS_login_submit" @click="testf">Login</b-button>
             </b-col>
         </b-row>
     </b-form>
@@ -72,6 +72,13 @@ export default {
                 //@ts-ignore
                 this.loginWrong = true;
             }
+        }
+    },
+    methods: {
+        testf() {
+            let name: HTMLInputElement | null = <HTMLInputElement> document.getElementById("WAS_username_input");
+            if (name)
+                localStorage.setItem('login_name', name.value || '');
         }
     }
 };

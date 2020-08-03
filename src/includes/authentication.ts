@@ -111,13 +111,20 @@ export let secureFrontend: RequestHandler = function(req, res, next)  {
     if (req.isAuthenticated()) {
         next();
     } else {
-        logger.debug("login required");
-        res.redirect(303, url.format({
-            pathname: "/login",
-            query: {
-                info: 'l'
-            }
-        }));
+        let rdurl: {};
+        if (req.path != "/") {
+            rdurl = {
+                pathname: "/login",
+                query: {
+                    info: 'l'
+                }
+            };
+        } else {
+            rdurl = {
+                pathname: "/login",
+            };
+        }
+        res.redirect(303, url.format(rdurl));
     }
 }
 
