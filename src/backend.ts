@@ -146,17 +146,16 @@ function initSocket(socket: socketio.Socket) : void {
     CONNECTIONS++;
 
     io.emit('user_count_changed', CONNECTIONS);
-    //const address: string = socket.handshake.headers["x-forwarded-for"].split(",")[0];
-    const address: string = "//TODO :)";
-    logger.debug("User connected from %s", address);
 
     socket.on("walker_lock", function(data) {
         socket.broadcast.emit("walker_lock", data);
+        logger.debug("LOCK "+data);
         CURRENT_LOCKS[socket.id] = data;
     });
 
     socket.on('walker_unlock', function(data){
       socket.broadcast.emit('walker_unlock', data);
+      logger.debug("UNLOCK "+data);
       delete CURRENT_LOCKS[socket.id];
     });
 
@@ -172,6 +171,10 @@ function initSocket(socket: socketio.Socket) : void {
     });
 
     socket.on('heartbeat', () => {});
+
+    for (let key_locks in CURRENT_LOCKS) {
+        socket.emit('walker_lock', CURRENT_LOCKS[key_locks]);
+    }
 
 }
 

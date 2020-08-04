@@ -16,6 +16,7 @@
                         exact-active-class="WAS_walker_list_item_active" 
                         active-class="nonesese" 
                         replace
+                        :id="'WAS_WALKER_'+w.rec_id" 
                         :to="{ name: 'edit-walker', params: { id: w.rec_id } }"
                     >
                         <div class="col-8 col-xl-8 WAS_walker_list_name">{{ w.firstname }}&nbsp;{{ w.lastname }}</div>
@@ -67,6 +68,28 @@ export default {
         }).catch(function(err) {
             console.log(err);
         });
+        setTimeout(() => {
+            this.$root.socket.on('walker_lock', rec_id => {
+                let walker_item = document.getElementById("WAS_WALKER_"+rec_id)
+                if (walker_item)
+                    walker_item.classList.add("WAS_WALKER_DISABLED");
+            });
+            this.$root.socket.on('walker_unlock', rec_id => {
+                let walker_item = document.getElementById("WAS_WALKER_"+rec_id)
+                if (walker_item)
+                    walker_item.classList.remove("WAS_WALKER_DISABLED");
+            });
+            this.$root.socket.on('walker_added', w => {
+                this.walker.push(w);
+            });
+            this.$root.socket.on('walker_deleted', rec_id => {
+                for (var i = this.walker.length - 1; i >= 0; i--) {
+                    if (this.walker[i].rec_id == rec_id)
+                        this.walker.splice(i, 1);
+                }
+            });
+
+        }, 1000);
     },
     methods: {
         getIcon(dist, part) {
@@ -193,6 +216,11 @@ body {
 
 .WAS_walker_list_distance {
     font-size: 0.8em;
+}
+
+.WAS_WALKER_DISABLED {
+    opacity: 0.3;
+    pointer-events: none;
 }
 
 .WAS_walker_list_item {

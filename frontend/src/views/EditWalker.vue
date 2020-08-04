@@ -318,24 +318,28 @@ export default {
     beforeRouteUpdate(to, from, next) {
         if (this.overwriteState) {
             this.overwriteState = false;
+            this.unlock_walker(from.params.id);
             next();
         } else if (this.checkState()) {
             this.nextRoute = to;
             this.displayState();
             this.$refs['save-modal'].show();
         } else {
+            this.unlock_walker(from.params.id);
             next();
         } 
     },
     beforeRouteLeave(to, from, next) {
         if (this.overwriteState) {
             this.overwriteState = false;
+            this.unlock_walker();
             next();
         } else if (this.checkState()) {
             this.nextRoute = to;
             this.displayState();
             this.$refs['save-modal'].show();
         } else {
+            this.unlock_walker();
             next();
         }
     },
@@ -416,6 +420,7 @@ export default {
                 this.loading = false;
                 if (typeof callback === 'function') callback();
             });
+            this.lock_walker(this.$route.params.id);
         },
         applyDistance: function(dis) {
             document.getElementById("WAS_edit_walker_form_distance_m").value = dis;
@@ -651,7 +656,8 @@ export default {
                 city: config.default_city,
                 address: '',
                 firstname: '',
-                lastname: ''
+                lastname: '',
+                rec_id: Math.random().toString()
             });
             this.$emit('scrolldown');
         },
@@ -710,6 +716,14 @@ export default {
             }
 
             node.addEventListener('animationend', handleAnimationEnd)
+        },
+        lock_walker(w) {
+            let tolock = w ? w : this.walker.rec_id;
+            this.$root.socket.emit('walker_lock', tolock);
+        },
+        unlock_walker(w) {
+            let tounlock = w ? w : this.walker.rec_id;
+            this.$root.socket.emit('walker_unlock', tounlock);
         }
     }
 };

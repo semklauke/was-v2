@@ -116,6 +116,8 @@ r.post('/walker/:walker_id', secure, bodyParser.json(), function(req, res){
         return;
     }
 
+    if (d.rec_id) delete d.rec_id;
+
     const donation_id: number = 
         DB().insert('donations', d);
 
