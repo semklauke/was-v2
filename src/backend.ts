@@ -11,6 +11,7 @@ import DB from 'better-sqlite3-helper';
 import winston from 'winston';
 import path from 'path';
 import https from 'https';
+import http from 'http';
 import fs from 'fs';
 import socketio from 'socket.io';
 import url from 'url';
@@ -27,10 +28,12 @@ import { initAuthentication, secure, secureFrontend } from './includes/authentic
 const app: express.Express = express();
 let server: https.Server;
 let server6: https.Server;
+let server_http: http.Server;
 let io: socketio.Server;
 
 // express setup
-const port: number = config.port || 443;
+const port_https: number = config.port || 443;
+const port_http: number = 80;
 let sslOptions: https.ServerOptions;
 
 app.use('/assets', express.static(path.resolve(__dirname, config.frontend_folder, 'assets')));
@@ -68,23 +71,30 @@ try {
 
     logger.app('Starting node https server on ipv4 and ipv6');
 
-    server = https.createServer(sslOptions, app).listen(port, config.ip.ipv4, () => {
+    server = https.createServer(sslOptions, app).listen(port_https, config.ip.ipv4, () => {
         logger.app('-------- IPv4 SERVER IS RUNNING --------');
-        logger.app('at: https://%s:%d', config.ip.ipv4, port);
+        logger.app('at: https://%s:%d', config.ip.ipv4, port_https);
     });
 
     if (config.ipv6) {
-        server6 = https.createServer(sslOptions, app).listen(port, config.ip.ipv6, () => {
+        server6 = https.createServer(sslOptions, app).listen(port_https, config.ip.ipv6, () => {
             logger.app('-------- IPv6 SERVER IS RUNNING --------');
-            logger.app('at: https://[%s]:%d', config.ip.ipv6, port);
+            logger.app('at: https://[%s]:%d', config.ip.ipv6, port_https);
         });
     }
+
+    server_http = http.createServer(app).listen(port_http, config.ip.ipv4, () => {
+        logger.app('http ipv4 server running also :(');
+    })
 
     logger.app("Init Authentication with passport");
         initAuthentication(passport);
 
     logger.app("Start Socket.IO websocket server");
-    io = socketio(server);
+    //@ts-ignore
+    io = new socketio();
+    io.attach(server);
+    io.attach(server_http);
     io.on('connection', initSocket);
 
 } catch (err) {
