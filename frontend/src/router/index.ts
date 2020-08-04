@@ -8,7 +8,7 @@ import Edit from '@/views/Edit.vue';
 import EditWalker from '@/views/EditWalker.vue';
 import NewWalker from '@/views/NewWalker.vue';
 import PostPorcessing from '@/views/PostProcessing.vue';
-const Overview = { template: '<div>Overview</div>' }
+import Overview from '@/views/Overview.vue';
 //const Walker = { template: '<div>Walker</div>' }
 //const Admin = { template: '<div>Admin</div>' }
 
