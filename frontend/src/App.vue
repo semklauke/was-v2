@@ -4,12 +4,18 @@
         <b-navbar-brand href="/">WaS 2020</b-navbar-brand>
         <b-collapse is-nav id="WAS_mainNaBarCollapseWrapper">
             <b-navbar-nav>
-                <b-nav-item :to="{ name: 'edit' }">Edit</b-nav-item>
-                <b-nav-item :to="{ name: 'new-walker' }">New</b-nav-item>
-                <b-nav-item :to="{ name: 'overview' }">Overview</b-nav-item>
-                <b-nav-item :to="{ name: 'walker' }">Walker</b-nav-item>
-                <b-nav-item :to="{ name: 'admin' }">Admin</b-nav-item>
-                <b-nav-item :to="{ name: 'post' }">Postprocessing</b-nav-item>
+                <b-nav-item :to="{ name: 'edit' }">
+                    <!--b-icon icon="file-text"></b-icon--> Edit
+                </b-nav-item>
+                <b-nav-item :to="{ name: 'new-walker' }">
+                    <!--b-icon icon="file-earmark-plus"></b-icon--> New
+                </b-nav-item>
+                <b-nav-item :to="{ name: 'overview' }">
+                    <!--b-icon icon="bar-chart"></b-icon--> Overview
+                </b-nav-item>
+                <b-nav-item :to="{ name: 'post' }">
+                    <!--b-icon icon="cloud-download"></b-icon--> Postprocessing
+                </b-nav-item>
             </b-navbar-nav>
             <b-navbar-nav class="ml-auto">
                 <b-nav-text v-if="login_name != ''" class="WAS_loginname pr-1">{{ login_name }}</b-nav-text>
@@ -125,7 +131,7 @@ export default {
     data: function () {
         return {
             socketio_heartbeat_toggle: false,
-            login_name: "sem"
+            login_name: ""
         };
     },
     mounted() {
@@ -142,11 +148,11 @@ export default {
     },
     methods: {
         socketio_heartbeat() {
-            if (this.$root.socket)
+            if (this.$root.socket) {
                 this.$root.socket.emit('heartbeat');
                 if (!this.socketio_heartbeat_toggle)
                     setTimeout(this.socketio_heartbeat, 12 * 1000);
-            else
+            } else
                 setTimeout(this.socketio_heartbeat, 1.5 * 1000);
         },
         logout() {

@@ -28,7 +28,7 @@ function numberToSringDE(x: number) : string {
     return s;
 }
 
-const money_threshold: number = 0.0;
+const money_threshold: number = config.donation_receipt_threshold;
 
 // sql querys
 const sql_donations: SQL = `

@@ -1,6 +1,6 @@
 <template>
 <b-container fluid="lg" id="WAS_post_container">
-    <b-row>
+    <b-row class="mt-3">
         <b-col cols="12" md="6" lg="4"
             v-for="c in classes" 
             :key="'posttile-'+c"
@@ -16,7 +16,7 @@
         </b-col>
     </b-row>
     <b-row>
-        <b-col cols="12" md="6" lg="4"
+        <b-col cols="12" md="6" lg="4" class="mb-3"
             v-for="o in oberstufe" 
             :key="'posttilec-'+o" 
             
