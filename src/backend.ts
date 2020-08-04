@@ -131,6 +131,9 @@ app.use('/api/walker', api_walker(io));
 import { router as api_donation } from './includes/api/donation';
 app.use('/api/donation', api_donation(io));
 
+import { router as api_overview } from './includes/api/overview';
+app.use('/api/overview', api_overview);
+
 // post production
 import { router as post_production_class } from './includes/api/class';
 app.use('/post/class', post_production_class);
