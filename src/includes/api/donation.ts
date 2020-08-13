@@ -9,7 +9,7 @@ import DB from 'better-sqlite3-helper';
 import socketio from 'socket.io';
 import bodyParser from 'body-parser';
 import { logger, dbLogger } from './../logger';
-import { Walker, Donation, SQL, WalkerTransfer } from './../../types'
+import { Walker, Donation, SQL, WalkerTransfer, User } from './../../types'
 
 // sql querys
 
@@ -83,6 +83,12 @@ r.post('/', secure, bodyParser.json(), function(req, res){
     const donation_id: number = 
         DB().insert('donations', d);
 
+    dbLogger.info("Insert new donation with id "+donation_id+" for walker "+d.walker_id, {
+        type: "insert",
+        user: (req.user as User).id, 
+        rb: "DELETE FROM donations WHERE rec_id = "+donation_id
+    });
+
     logger.info(
         "Donation (%d) from %s to Walker %s (%d) added by %s",
         donation_id, d.firstname+" "+d.lastname,
@@ -120,6 +126,12 @@ r.post('/walker/:walker_id', secure, bodyParser.json(), function(req, res){
 
     const donation_id: number = 
         DB().insert('donations', d);
+
+    dbLogger.info("Insert new donation with id "+donation_id+" for walker "+walker_id, {
+        type: "insert",
+        user: (req.user as User).id, 
+        rb: "DELETE FROM donations WHERE rec_id = "+donation_id
+    });
 
     logger.info(
         "Donation (%d) from %s to Walker %s (%d) added by %s",
@@ -174,6 +186,29 @@ r.delete('/walker/:walker_id', secure, function(req, res){
     let walker_id: number = parseInt(req.params.walker_id);
     logger.http("DELETE api.donation /walker/%d (:walker_id)", walker_id);
 
+    // rollback donations
+    let donations_rollback: string = "";
+    let donationsToBeDeleted = DB().query(sql_donation_for_walker, walker_id);
+    if (donationsToBeDeleted.length != 0) {
+        for (let don of donationsToBeDeleted) {
+            let rollback = "INSERT INTO donations (";
+            let rollback_values = ") VALUES (";
+            for (const col in don) {
+                rollback += col + ", ";
+                //@ts-ignore
+                rollback_values += don[col] + ", ";
+            }
+            rollback = rollback.slice(0, -1);
+            rollback_values = rollback_values.slice(0, -1);
+            donations_rollback += rollback + rollback_values + "); ";
+        }
+        dbLogger.info("Delete donations of walker "+walker_id, {
+            type: "delete",
+            user: (req.user as User).id,
+            rb: donations_rollback.slice(0, -2)
+        });
+    }
+
     let stmt: sqlite.Statement = DB().prepare(sql_delete_donations_walker);
     let deletions: number = stmt.run(walker_id).changes;
 
@@ -194,6 +229,27 @@ r.put('/:donation_id', secure, bodyParser.json(), function(req, res){
 
     if (req.body.donation && req.body.donation != {}) {
         let d: Donation = req.body.donation;
+
+        // rollback 
+        let donationToBeUpdated = DB().queryFirstRow(sql_donation, donation_id);
+
+        if (!donationToBeUpdated) {
+            logger.debug("Rollback fail at api.donation PUT /"+donation_id);
+        } else {
+            let rollback_set = "SET ";
+            for (const col in req.body.donation) {
+                if (col == "rec_id") continue;
+                rollback_set += col + " = " + donationToBeUpdated[col] + ", ";
+            }
+            rollback_set = rollback_set.slice(0, -1);
+            dbLogger.info("Update donation "+donation_id, {
+                type: "update",
+                user: (req.user as User).id,
+                rb: "UPDATE donations " + rollback_set + " WHERE rec_id = " + donation_id
+            });
+        }
+
+        // update database
         DB().updateWithBlackList('donations', d, { rec_id: donation_id }, ['rec_id']);
         //@ts-ignore
         logger.info('Donation (%d) updated by %s', donation_id, req.user.name);
@@ -209,6 +265,27 @@ r.delete('/:donation_id', secure, function(req, res){
 
     let donation_id: number = parseInt(req.params.donation_id);
     logger.http("DELETE api.donation /%d (:donation_id)", donation_id);
+
+    // rollback
+    let donationsToBeDeleted: Donation | undefined = DB().queryFirstRow(sql_donation, donation_id);
+    if (!donationsToBeDeleted) {
+        logger.debug("Rollback fail at api.donatio DELETE /"+donation_id);
+    } else {
+        let rollback = "INSERT INTO donations (";
+        let rollback_values = ") VALUES (";
+        for (const col in donationsToBeDeleted) {
+            rollback += col + ", ";
+            //@ts-ignore
+            rollback_values += donationsToBeDeleted[col] + ", ";
+        }
+        rollback = rollback.slice(0, -1);
+        rollback_values = rollback_values.slice(0, -1);
+        dbLogger.info("Delete donation "+donation_id, {
+            type: "delete",
+            user: (req.user as User).id,
+            rb: rollback + rollback_values + ")"
+        });
+    }
 
     let stmt: sqlite.Statement = DB().prepare(sql_delete_donations);
     let deletion: number = stmt.run(donation_id).changes;

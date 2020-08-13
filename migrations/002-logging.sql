@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS rbs (
     message TEXT, 
     user TEXT, 
     rb TEXT, 
-    error TEXT
+    error TEXT DEFAULT NULL
 );
 
 -- Down

@@ -10,7 +10,7 @@ import DB from 'better-sqlite3-helper';
 import bodyParser from 'body-parser';
 import socketio from 'socket.io';
 import { logger, dbLogger } from './../logger';
-import { Walker, Donation, SQL, WalkerTransfer } from './../../types'
+import { Walker, Donation, SQL, WalkerTransfer, User } from './../../types'
 
 // sql querys
 const sql_walkerAll: SQL = `
@@ -23,6 +23,10 @@ const sql_walkerAll: SQL = `
 
 const sql_walker: SQL = `
     SELECT * FROM walkers WHERE rec_id = ? LIMIT 1
+`;
+
+const sql_donation: SQL = `
+    SELECT * FROM donations WHERE rec_id = ? LIMIT 1
 `;
 
 const sql_donation_for_walker: SQL = `
@@ -90,6 +94,12 @@ r.post('/', secure, bodyParser.json(), function(req, res){
     }
     
     const walker_id: number = DB().insert('walkers', w, ['class', 'firstname', 'lastname', 'distance_m', 'participates', 'course']);
+    
+    dbLogger.info("Insert new walker "+w.firstname+" "+w.lastname+" "+walker_id, {
+        type: "insert",
+        user: (req.user as User).id, 
+        rb: "DELETE FROM walkers WHERE rec_id = "+walker_id
+    });
     //@ts-ignore
     logger.info("Walker %s added by %s", w.firstname+" "+w.lastname, req.user.name);
     
@@ -107,6 +117,12 @@ r.post('/', secure, bodyParser.json(), function(req, res){
                 //@ts-ignore
                 req.user.name
             );
+
+            dbLogger.info("Insert donation for "+walker_id, {
+                type: "insert",
+                user: (req.user as User).id,
+                rb: "DELETE FROM donations WHERE rec_id = "+donation_id,
+            });
         });
     }
     w.rec_id = walker_id;
@@ -153,6 +169,26 @@ r.put('/:walker_id', secure, bodyParser.json(), function(req, res){
         if (req.body.walker.course && (req.body.walker.course == "null" || req.body.walker.course == ""))
             req.body.walker.course = undefined;
         
+        // rollback 
+        let walkerToBeUpdated = DB().queryFirstRow(sql_walker, walker_id);
+
+        if (!walkerToBeUpdated) {
+            logger.debug("Rollback fail at api.walker PUT /"+walker_id);
+        } else {
+            let rollback_set = "SET ";
+            for (const col in req.body.walker) {
+                if (col == "rec_id") continue;
+                rollback_set += col + " = " + walkerToBeUpdated[col] + ", ";
+            }
+            rollback_set = rollback_set.slice(0, -1);
+            dbLogger.info("Update walker "+walker_id, {
+                type: "update",
+                user: (req.user as User).id,
+                rb: "UPDATE walkers " + rollback_set + " WHERE rec_id = "+walker_id
+            });
+        }
+
+        // update database
         DB().updateWithBlackList('walkers', req.body.walker, { rec_id: walker_id }, ['rec_id']);
         //@ts-ignore
         logger.info("Walker (%d) updated by %s", walker_id, req.user.name);
@@ -170,6 +206,25 @@ r.put('/:walker_id', secure, bodyParser.json(), function(req, res){
                 res.status(400).json({ error: 'Donation has no rec_id', errorid: 102 });
                 return;
             } else {
+
+                // rollback donation
+                let donationToBeUpdated = DB().queryFirstRow(sql_donation, value.rec_id);
+
+                if (!donationToBeUpdated) {
+                    logger.debug("Rollback fail at api.walker PUT donation /"+walker_id);
+                } else {
+                    let rollback_set = "SET ";
+                    for (const col in value) {
+                        if (col == "rec_id") continue;
+                        rollback_set += col + " = " + donationToBeUpdated[col] + ", ";
+                    }
+                    rollback_set = rollback_set.slice(0, -1);
+                    dbLogger.info("Update donation "+value.rec_id, {
+                        type: "update",
+                        user: (req.user as User).id,
+                        rb: "UPDATE donations " + rollback_set + " WHERE rec_id = "+value.rec_id
+                    });
+                }
                 DB().updateWithBlackList('donations', value, { rec_id: value.rec_id }, ['rec_id']);
                 //@ts-ignore
                 logger.info("Donation (%d) of Walker (%d) updated by %s", value.rec_id, walker_id, req.user.name);
@@ -195,6 +250,33 @@ r.delete('/:walker_id', secure, function(req, res){
     }
 
     if (req.query.donations != undefined && req.query.donations == 'true') {
+
+        // rollback donations
+        let donations_rollback: string = "";
+        let donationsToBeDeleted = DB().query(sql_donation_for_walker, walker_id);
+        if (donationsToBeDeleted.length == 0) {
+            logger.debug("Rollback fail at api.walker DELETE /"+walker_id+" donations");
+        } else {
+            for (let don of donationsToBeDeleted) {
+                let rollback = "INSERT INTO donations (";
+                let rollback_values = ") VALUES (";
+                for (const col in don) {
+                    rollback += col + ", ";
+                    //@ts-ignore
+                    rollback_values += don[col] + ", ";
+                }
+                rollback = rollback.slice(0, -1);
+                rollback_values = rollback_values.slice(0, -1);
+                donations_rollback += rollback + rollback_values + "); ";
+            }
+            dbLogger.info("Delete donations of walker "+walker_id, {
+                type: "delete",
+                user: (req.user as User).id,
+                rb: donations_rollback.slice(0, -2)
+            });
+        }
+        
+        // delete donations for walker in database
         let stmt: sqlite.Statement = DB().prepare(sql_delete_donations_walker);
         let deletions: number = stmt.run(walker_id).changes;
         logger.info(
@@ -204,6 +286,22 @@ r.delete('/:walker_id', secure, function(req, res){
             req.user.name
         );
     }
+
+    // rollback
+    let walker_rollback = "INSERT INTO walkers (";
+    let walker_rollback_values = ") VALUES (";
+    for (const col in w) {
+        walker_rollback += col + ", ";
+        //@ts-ignore
+        walker_rollback_values += w[col] + ", ";
+    }
+    walker_rollback = walker_rollback.slice(0, -1);
+    walker_rollback_values = walker_rollback_values.slice(0, -1);
+    dbLogger.info("Delete walker "+walker_id, {
+        type: "delete",
+        user: (req.user as User).id,
+        rb: walker_rollback + walker_rollback_values + ")"
+    });
 
     DB().prepare(sql_delete_walker).run(walker_id);
     //@ts-ignore
