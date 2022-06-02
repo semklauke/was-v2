@@ -83,7 +83,7 @@ r.post('/', secure, bodyParser.json(), function(req, res){
         let dup: number = DB().query(sql_check_duplicate, w.firstname, w.lastname, w.class).length;
         if (dup != 0) {
             logger.warn(
-                "POST api.walker / Attempt to creat duplicate Walker: %s by %s",
+                "POST api.walker / Attempt to create duplicate Walker: %s by %s",
                 w.firstname + " " + w.lastname,
                 //@ts-ignore
                 req.user.name
@@ -310,6 +310,75 @@ r.delete('/:walker_id', secure, function(req, res){
     
     io.emit("walker_deleted", walker_id);
     res.status(200).json({ success: "Walker deleted", rec_id: walker_id });
+});
+
+// new walkers bluk import
+r.post('/bulk', secure, bodyParser.json(), function(req, res){
+
+    // walker insert
+    logger.http("POST api.walker /bulk",);
+
+    if (!req.body.walkers || req.body.walkers == []) {
+        logger.warn("POST api.walker /bulk Walkers array is missing in request");
+        res.status(400).json({ error: 'bulk add needs a walkers array in the request', errorid: 120 });
+        return;
+    }
+
+    let walker: Walker[] = req.body.walkers;
+
+    // sanitize course
+    for (let w of walker) {
+        if (w.course === undefined || (w.course && (w.course == "null" || w.course == "")))
+            w.course = null
+    }
+
+    // check for dulicate
+    if (req.body.force_duplicate == undefined || req.body.force_duplicate == false) {
+        let duplicates: Walker[] = [];
+        for (const w of walker) {
+            let dup: number = DB().query(sql_check_duplicate, w.firstname, w.lastname, w.class).length;
+            if (dup != 0) {
+                logger.warn(
+                    "POST api.walker /bulk duplicate Walker: %s by %s",
+                    w.firstname + " " + w.lastname + " (" + w.class + ")",
+                    //@ts-ignore
+                    req.user.name
+                );
+                duplicates.push(w)
+            }
+        }
+        if (duplicates.length != 0) {
+            res.status(409).json({ 
+                error: 'duplicate Walkers detected. Please confirm.', 
+                errorid: 122, duplicate: true, duplicates 
+            });
+            return;
+        }
+    }
+    
+    const insertWalkers = DB().transaction( (walkers: Walker[])  => {
+        let counter = 1;
+        for (let w of walkers) {
+            w.rec_id = DB().insert('walkers', w, ['class', 'firstname', 'lastname', 'distance_m', 'participates', 'course'])
+            dbLogger.info("Insert new walker "+w.firstname+" "+w.lastname+" "+w.rec_id, {
+                type: "insert",
+                user: (req.user as User).id, 
+                rb: "DELETE FROM walkers WHERE rec_id = "+ w.rec_id
+            });
+            //@ts-ignore
+            logger.info("Bulk [%d] add %s ", counter, w.firstname+" "+w.lastname+" (" + w.class + ")");
+            io.emit("walker_added", w);
+            counter++;
+        }
+
+    })
+    
+    insertWalkers(walker);
+
+    //@ts-ignore
+    logger.info("-- Bulk add by %s done --", req.user.name);
+    
+    res.status(200).json({ success: "Bulk Walker added" });
 });
 
 return r;
