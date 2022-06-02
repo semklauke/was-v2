@@ -1,9 +1,19 @@
 const path = require('path');
 const fs = require('fs');
+const net = require('net')
 
 const prompts = require('prompts');
 
 const c = require('./../includes/config').default;
+
+let formatToNodePath = str_in => {
+    let str = "path.join("
+    for (let el of str_in.split("/")) {
+        if (el == "") continue;
+        str += `'${el}', `
+    }
+    return str.slice(0,-2) + ")"
+}
 
 const questions = [
     {
@@ -25,40 +35,64 @@ const questions = [
         initial: c.debug,
     },
     {
-        type: 'number',
-        name: 'port',
-        message: 'Website Port: ',
-        initial: c.port,
+        type: 'confirm',
+        name: 'http',
+        message: 'Http server? (ohne ssl)',
+        initial: c.http,
     },
     {
-        type: 'text',
+        type: 'confirm',
+        name: 'https',
+        message: 'Https server? (mit ssl)',
+        initial: c.https,
+    },
+    {
+        type: (_, prevs) => prevs.http ? 'number' : null,
+        name: 'port_http',
+        message: 'http Port: ',
+        initial: c.port.http,
+        min: 0
+    },
+    {
+        type: (_, prevs) => prevs.https ? 'number' : null,
+        name: 'port_https',
+        message: 'https Port: ',
+        initial: c.port.https,
+        min: 0
+    },
+    {
+        type: (_, prevs) => prevs.https ? 'text' : null,
         name: 'ssl_cert',
         message: 'Pfad zum RSA SSL Zertificat in PEM format: ',
         initial: c.ssl.cert,
+        format: formatToNodePath
     },
     {
-        type: 'text',
+        type: (_, prevs) => prevs.https ? 'text' : null,
         name: 'ssl_key',
         message: 'Pfad zum RSA SSL Privat Key in PEM format: ',
         initial: c.ssl.key,
+        format: formatToNodePath
     },
     {
         type:  'text',
         name: 'ip_ipv4',
         message: 'IPv4 Addresse: ',
         initial: c.ip.ipv4,
+        validate: val => net.isIP(val) === 4
     },
     {
         type: 'confirm',
         name: 'ipv6',
         message: 'IPv6 aktivieren (neben IPv4) ? ',
-        initial: c.ipv6,
+        initial: c.ipv6
     },
     {
         type:  prev => prev === true ? 'text' : null,
         name: 'ip_ipv6',
         message: 'IPv6 Addresse: ',
         initial: c.ip.ipv6,
+        validate: val => net.isIP(val) === 6
     },
     {
         type:  'password',
@@ -82,14 +116,17 @@ const questions = [
         type: 'text',
         name: "print_date",
         message: "Druckdatum, welches auf die Spendenquittungen geschrieben wird (null = Datum des abrufes der webseite): ",
-        initial: c.print_date === null ? 'null' : c.print_date 
+        initial: c.print_date === null ? 'null' : c.print_date,
+        format: val => val === 'null' || val === null ? 'null' : '"'+val+'"'
 
     },
     {
         type: 'number',
         name: "donation_receipt_threshold",
         message: "Ab welchem Geldbetrag wird eine Spendenquittung ausgestellt: ",
-        initial: c.donation_receipt_threshold
+        initial: c.donation_receipt_threshold,
+        format: val => parseFloat(val),
+        min: 0.0
     }
 ];
 
@@ -111,13 +148,22 @@ export default {
     // is the appliaction in debbuging mode (true/false)
     "debug" : ${ response.debug },
 
+    // start a http server
+    "http" : ${ response.http },
+
+    // start a https server (with ssl encryption, see settings below)
+    "https" : ${ response.https },
+
     // port the backend server is running on
-    "port" : ${ response.port },
+    "port" : {
+        "http": ${ response.http ? response.port_http : c.port.http }, // no ssl http port
+        "https": ${ response.https ? response.port_https : c.port.https } // https port
+    },
 
     // paths to the ssl private key and certificate, relative to the project root
     "ssl" : {
-        "cert" : ${ response.ssl_cert === 'keys/cert.pem' ? "path.join('keys', 'cert.pem')" : "'"+response.ssl_cert+"'" },
-        "key" : ${ response.ssl_key === 'keys/key.pem' ? "path.join('keys', 'key.pem')" : "'"+response.ssl_key+"'" }
+        "cert" : ${ response.https ?  response.ssl_cert : formatToNodePath(c.ssl.cert)},
+        "key" : ${ response.https ?  response.ssl_key : formatToNodePath(c.ssl.key)}
     },
 
     // make service available via ipv4 AND ipv6
@@ -159,7 +205,7 @@ export default {
     });
 
     
-}, 2000);
+}, 1200);
     
 
 

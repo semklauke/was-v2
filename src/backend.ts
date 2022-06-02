@@ -32,8 +32,8 @@ let server_http: http.Server;
 let io: Server;
 
 // express setup
-const port_https: number = config.port || 443;
-const port_http: number = 80;
+const port_https: number = config.port.https || 443;
+const port_http: number = config.port.http || 80;
 let sslOptions: https.ServerOptions;
 
 app.use('/assets', express.static(path.resolve(__dirname, config.frontend_folder, 'assets')));
@@ -64,37 +64,44 @@ try {
     DB().defaultSafeIntegers(false);       
     logger.app('Migrating database. force=%s', mig);
 
-    logger.app('Reading ssl key and cert from ', config.ssl);
-    let key = fs.readFileSync(config.ssl.key);
-    let cert = fs.readFileSync(config.ssl.cert);
-    sslOptions = { key, cert };
+    logger.app("Start Socket.IO websocket server");
+    io = new Server<ClientToServerEvents, ServerToClientEvents>();
 
-    logger.app('Starting node https server on ipv4 and ipv6');
+    if (config.https) {
+        logger.app('Reading ssl key and cert from ', config.ssl);
+        let key = fs.readFileSync(config.ssl.key);
+        let cert = fs.readFileSync(config.ssl.cert);
+        sslOptions = { key, cert };
 
-    server = https.createServer(sslOptions, app).listen(port_https, config.ip.ipv4, () => {
-        logger.app('-------- IPv4 SERVER IS RUNNING --------');
-        logger.app('at: https://%s:%d', config.ip.ipv4, port_https);
-    });
+        logger.app('Starting node https server...');
 
-    if (config.ipv6) {
-        server6 = https.createServer(sslOptions, app).listen(port_https, config.ip.ipv6, () => {
-            logger.app('-------- IPv6 SERVER IS RUNNING --------');
-            logger.app('at: https://[%s]:%d', config.ip.ipv6, port_https);
+        server = https.createServer(sslOptions, app).listen(port_https, config.ip.ipv4, () => {
+            logger.app('-------- IPv4 SERVER IS RUNNING --------');
+            logger.app('at: https://%s:%d', config.ip.ipv4, port_https);
+            io.attach(server)
         });
+
+        if (config.ipv6) {
+            server6 = https.createServer(sslOptions, app).listen(port_https, config.ip.ipv6, () => {
+                logger.app('-------- IPv6 SERVER IS RUNNING --------');
+                logger.app('at: https://[%s]:%d', config.ip.ipv6, port_https);
+                io.attach(server6);
+            });
+            
+        }
+    }
+    if (config.http) {
+        server_http = http.createServer(app).listen(port_http, config.ip.ipv4, () => {
+            logger.app('-------- IPv4 HTTP SERVER IS RUNNING --------');
+            logger.app('at: http://[%s]:%d', config.ip.ipv4, port_http);
+            io.attach(server_http)
+        })
+        
     }
 
-    server_http = http.createServer(app).listen(port_http, config.ip.ipv4, () => {
-        logger.app('http ipv4 server running also :(');
-    })
-
     logger.app("Init Authentication with passport");
-        initAuthentication(passport);
-
-    logger.app("Start Socket.IO websocket server");
-    //@ts-ignore
-    io = new Server<ClientToServerEvents, ServerToClientEvents>();
-    io.attach(server);
-    io.attach(server_http);
+    initAuthentication(passport);
+    
     io.on('connection', initSocket);
 
 } catch (err: any) {

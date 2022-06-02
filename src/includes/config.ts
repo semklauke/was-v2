@@ -10,8 +10,17 @@ export default {
     // is the appliaction in debbuging mode (true/false)
     "debug" : true,
 
+    // start a http server
+    "http" : true,
+
+    // start a https server (with ssl encryption, see settings below)
+    "https" : true,
+
     // port the backend server is running on
-    "port" : 443,
+    "port" : {
+        "http": 80, // no ssl http port
+        "https": 443 // https port
+    },
 
     // paths to the ssl private key and certificate, relative to the project root
     "ssl" : {
@@ -42,11 +51,10 @@ export default {
     "print_date" : null,
 
     // threshold, from which donation amout on, donation receipts will be generated
-    "donation_receipt_threshold": 10.0,
+    "donation_receipt_threshold": 10,
 
     frontend : {
         "default_zipcode" : "59494",
         "default_city" : "Soest"
     }
 };
-    
