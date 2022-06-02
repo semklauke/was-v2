@@ -1,6 +1,6 @@
 <template>
 <div class="WAS_donation">
-    <div class="WAS_donation_box_name">Spender {{ donation_index }}</div>
+    <div class="WAS_donation_box_name">Spender {{ donation_index+1 }}</div>
     <div class="WAS_donation_box" :id="donation_identifier">
         <div class="WAS_donation_box_form">
             <b-row class="WAS_donation_box_row">
@@ -291,7 +291,7 @@ export default Vue.extend({
 }
 
 .WAS_donation_box_name {
-    padding: 10px 20px 10px 20px;
+    padding: 5px 10px;
     font-size: 1.4em;
     font-weight: bold;
     background-color: #fff;
