@@ -423,7 +423,9 @@ export default {
             this.lock_walker(this.$route.params.id);
         },
         applyDistance: function(dis) {
-            document.getElementById("WAS_edit_walker_form_distance_m").value = dis;
+            //document.getElementById("WAS_edit_walker_form_distance_m").value = dis;
+            this.walker.distance_m = dis;
+            this.updateWalkerState('distance_m')
         },
         deleteState: function() {
             for (let w in this.state_walker) {

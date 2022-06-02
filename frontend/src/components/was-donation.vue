@@ -243,6 +243,7 @@ export default Vue.extend({
         },
         applyToPay: function() {
             this.donation.donation_amount_received = this.topay;
+            this.updateState('donation_amount_received')
         },
         updateState: function(key) {
             if (this.isNew) 
