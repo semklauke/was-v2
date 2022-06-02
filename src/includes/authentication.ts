@@ -40,21 +40,18 @@ export function initAuthentication(pp: PassportStatic) {
             user.id = <number> result.lastInsertRowid;
             dbLogger.log({
                 level: 'app',
-                message: 'INSERT new User',
-                type: 'INSERT',
-                user: user.uuid,
-                rb: 'test'
+                message: 'Insert new User',
+                type: 'insert',
+                rb: 'DELETE FROM logins WHERE rec_id = ' + user.id
             });
         } catch (error: any) {
             e = error as Error;
             logger.error("passport authenticate with error ", error);
             dbLogger.log({
                 level: 'error',
-                message: 'INSERT new User',
-                type: 'INSERT',
-                user: user.uuid,
-                error: e != null ? e.toString() : "-",
-                rb: 'test'
+                message: 'Insert new User',
+                type: 'Insert',
+                error: e != null ? e.toString() : null,
             });
         } finally {
             done(e, user);

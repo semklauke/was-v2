@@ -91,7 +91,7 @@ winston.loggers.add('production', {
 winston.loggers.add('db', {
     levels: level_settings,
     level: 'debug',
-    defaultMeta: { type: 'empty', user: 'server', rb: ';', error: 'null'},
+    defaultMeta: { type: 'empty', user: 'server', rb: ';', error: null},
     transports: [
         new wbs({
             format: winston.format.combine(
