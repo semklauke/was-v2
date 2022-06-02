@@ -3,7 +3,7 @@
 // execute logger init for the first time
 import './includes/logging';
 import { logger, dbLogger } from './includes/logger';
-import { User } from './types';
+import { User, ClientToServerEvents, ServerToClientEvents } from './types';
 import express from 'express';
 import sqlite from 'better-sqlite3';
 import { Database, Statement } from 'better-sqlite3';
@@ -13,7 +13,7 @@ import path from 'path';
 import https from 'https';
 import http from 'http';
 import fs from 'fs';
-import socketio from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import url from 'url';
 
 import passport from 'passport';
@@ -29,7 +29,7 @@ const app: express.Express = express();
 let server: https.Server;
 let server6: https.Server;
 let server_http: http.Server;
-let io: socketio.Server;
+let io: Server;
 
 // express setup
 const port_https: number = config.port || 443;
@@ -92,13 +92,13 @@ try {
 
     logger.app("Start Socket.IO websocket server");
     //@ts-ignore
-    io = new socketio();
+    io = new Server<ClientToServerEvents, ServerToClientEvents>();
     io.attach(server);
     io.attach(server_http);
     io.on('connection', initSocket);
 
-} catch (err) {
-    logger.error(err.toString());
+} catch (err: any) {
+    logger.error((err as Error).toString());
     process.exit(1);
 }
 
@@ -155,7 +155,7 @@ app.get('*', secureFrontend, function(req, res){
 // socket io stuff
 let CONNECTIONS: number = 0;
 let CURRENT_LOCKS: { [key: string] : any } = {};
-function initSocket(socket: socketio.Socket) : void {
+function initSocket(socket: Socket) : void {
     CONNECTIONS++;
 
     io.emit('user_count_changed', CONNECTIONS);

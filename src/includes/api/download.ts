@@ -28,7 +28,7 @@ const r: express.Router = express.Router();
 
 r.post('/', secure, bodyParser.json(), function(req, res) {
 
-    res.connection.setTimeout(20000);
+    if (res.connection) res.connection.setTimeout(20000);
     logger.http('GET api.download /');
 
     // generate ota, write into database
@@ -80,7 +80,7 @@ r.post('/', secure, bodyParser.json(), function(req, res) {
 
 r.post('/all/slow', secure, bodyParser.json(), function(req, res) {
 
-    res.connection.setTimeout(20000);
+    if (res.connection) res.connection.setTimeout(20000);
     logger.http('GET api.download.all /');
 
     // generate ota, write into database
@@ -159,7 +159,7 @@ r.post('/all/slow', secure, bodyParser.json(), function(req, res) {
 
 r.post('/all', secure, bodyParser.json(), function(req, res) {
 
-    res.connection.setTimeout(20000);
+    if (res.connection) res.connection.setTimeout(20000);
     logger.http('GET api.download.all /');
 
     // generate ota, write into database

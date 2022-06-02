@@ -11,6 +11,16 @@ interface User {
     id: number | null
 }
 
+declare global {
+    namespace Express {
+        interface User {
+            name: string,
+            uuid: string,
+            id: number | null
+        }
+    }
+}
+
 interface Walker {
     rec_id?: number,
     class: string,
@@ -73,3 +83,27 @@ interface ClassRender {
 }
 
 type SQL = string;
+
+// socket io
+
+interface ServerToClientEvents {
+    walker_added: (w: Walker) => void;
+    walker_deleted: (walker_id: number) => void;
+    post_progress_done: (ref: string) => void;
+    post_progress_progress: (url_index: number) => void;
+    user_count_changed: (nr: number) => void;
+    walker_lock: (walker_id: number) => void;
+    walker_unlock: (walker_id: number) => void;
+}
+
+interface ClientToServerEvents {
+    connection: () => void;
+    disconnect: () => void;
+    heartbeat: () => void;
+    walker_lock: (walker_id: number) => void;
+    walker_unlock: (walker_id: number) => void;
+}
+
+// interface InterServerEvents {}
+
+// interface SocketData {}

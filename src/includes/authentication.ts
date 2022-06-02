@@ -7,7 +7,7 @@ import config from './config';
 import sqlite from 'better-sqlite3';
 import DB from 'better-sqlite3-helper';
 import path from 'path';
-import uuid from 'uuid/v1';
+import { v4 as uuid } from 'uuid';
 import winston from 'winston';
 import { logger, dbLogger } from './../includes/logger';
 import { User, Login } from './../types';
@@ -45,15 +45,15 @@ export function initAuthentication(pp: PassportStatic) {
                 user: user.uuid,
                 rb: 'test'
             });
-        } catch (error) {
-            e = error;
+        } catch (error: any) {
+            e = error as Error;
             logger.error("passport authenticate with error ", error);
             dbLogger.log({
                 level: 'error',
                 message: 'INSERT new User',
                 type: 'INSERT',
                 user: user.uuid,
-                error: error.toString(),
+                error: e != null ? e.toString() : "-",
                 rb: 'test'
             });
         } finally {
@@ -62,7 +62,7 @@ export function initAuthentication(pp: PassportStatic) {
     });
 
     pp.use(authStrat);
-    pp.serializeUser(function(user: User, done: (err: any, id?: number) => void){
+    pp.serializeUser(function(user: Express.User, done: (err: any, id?: number | undefined) => void) : void {
         if (!user.id) {
             logger.error("passport.serializeUser no user object with user", user);
             done(new Error("passport.serializeUser no user object with user " + JSON.stringify(user)));
@@ -91,7 +91,7 @@ export function initAuthentication(pp: PassportStatic) {
             }
         } catch (error) {
             logger.error("DB ERROR | SELECT * FROM logins WHERE rec_id = %d", id);
-            if (e === null ) e = new Error("passport.deserializeUser db error");
+            if (e === null) e = new Error("passport.deserializeUser db error");
         } finally {
             done(e, u);
         }
