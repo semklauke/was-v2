@@ -1,4 +1,5 @@
 /// <reference types="better-sqlite3"/>
+/// <reference types="node"/>
 
 // execute logger init for the first time
 import './includes/logging';
@@ -112,18 +113,18 @@ try {
 
 
 // login controller
-
-app.get('/login', function(req, res) {
+app.get('/login', function(req: any, res: any) {
     res.sendFile(path.resolve(__dirname, config.frontend_folder, 'login.html'));
 });
 
-app.get('/logout', function(req, res) {
-    req.logout();
-    let rd = () => { res.redirect('/login') };
-    if (req.session) {
-        req.session.destroy(rd);
-    } else
-        rd();
+app.get('/logout', function(req: any, res: any) {
+    req.logout((err: any) => {
+        let rd = () => { res.redirect('/login') };
+        if (req.session) {
+            req.session.destroy(rd);
+        } else
+            rd();
+    });
 })
 app.post('/login', 
     passport.authenticate('local', {
@@ -191,6 +192,14 @@ function initSocket(socket: Socket) : void {
     });
 
     socket.on('heartbeat', () => {});
+
+    socket.on('subscribe_console', () => {
+        socket.join("console");
+    });
+
+    socket.on('unsubscribe_console', () => {
+        socket.leave("console");
+    });
 
     for (let key_locks in CURRENT_LOCKS) {
         socket.emit('walker_lock', CURRENT_LOCKS[key_locks]);

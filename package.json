@@ -53,6 +53,7 @@
     "uuid": "^8.3.2",
     "winston": "^3.7.2",
     "winston-better-sqlite3": "github:semklauke/winston-better-sqlite3",
-    "winston-timestamp-colorize": "^1.1.0"
+    "winston-timestamp-colorize": "^1.1.0",
+    "winston-transport": "^4.5.0"
   }
 }
