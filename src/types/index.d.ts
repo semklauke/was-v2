@@ -89,6 +89,7 @@ type SQL = string;
 interface ServerToClientEvents {
     walker_added: (w: Walker) => void;
     walker_deleted: (walker_id: number) => void;
+    walker_updated: (w: { w: Walker, walker_id: number }) => void;
     post_progress_done: (ref: string) => void;
     post_progress_progress: (url_index: number) => void;
     user_count_changed: (nr: number) => void;

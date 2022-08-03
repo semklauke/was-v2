@@ -88,6 +88,16 @@ export default {
                         this.walker.splice(i, 1);
                 }
             });
+            this.$root.socket.on('walker_updated', ({ w, walker_id }) => {
+                console.log(w)
+                for (var i = this.walker.length - 1; i >= 0; i--) {
+                    if (this.walker[i].rec_id == walker_id) {
+                        for (let key in w) {
+                            this.walker[i][key] = w[key];
+                        }
+                    }
+                }
+            })
 
         }, 1000);
     },

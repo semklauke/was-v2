@@ -165,9 +165,17 @@ r.put('/:walker_id', secure, bodyParser.json(), function(req, res){
     let walker_id: number = parseInt(req.params.walker_id);
     logger.http("PUT api.walker /%d (:walker_id)", walker_id);
 
+    // check if there is data to update
     if (req.body.walker && req.body.walker != {}) {
-        if (req.body.walker.course && (req.body.walker.course == "null" || req.body.walker.course == ""))
+        // dealing with some edge-case where the 'course' property is not always
+        // undefinded if it's not supposed to be updated
+        if ("course" in req.body.walker && 
+            (req.body.walker.course == "null" ||
+             req.body.walker.course == null ||
+             req.body.walker.course == "")
+        ) {
             req.body.walker.course = undefined;
+        }
         
         // rollback 
         let walkerToBeUpdated = DB().queryFirstRow(sql_walker, walker_id);
@@ -192,6 +200,20 @@ r.put('/:walker_id', secure, bodyParser.json(), function(req, res){
         DB().updateWithBlackList('walkers', req.body.walker, { rec_id: walker_id }, ['rec_id']);
         //@ts-ignore
         logger.info("Walker (%d) updated by %s", walker_id, req.user.name);
+
+        // if we updated information that is visable on the overview list,
+        // we want to inform the other clients: first-/lastname and paticipation status
+        if ("firstname" in req.body.walker ||
+            "lastname" in req.body.walker ||
+            "participates" in req.body.walker ||
+            "distance_m" in req.body.walker
+        ) {
+            logger.debug(req.body.walker)
+            io.emit("walker_updated", {
+                walker_id,
+                w: req.body.walker
+            })
+        }
     } else {
         res.status(400).json({ error: 'PUT Walker needs a Walker object in the request data', errorid: 113 });
         logger.warn("PUT api.walker /%d (:walker_id) No walker object in request", walker_id);
