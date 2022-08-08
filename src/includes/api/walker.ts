@@ -208,7 +208,6 @@ r.put('/:walker_id', secure, bodyParser.json(), function(req, res){
             "participates" in req.body.walker ||
             "distance_m" in req.body.walker
         ) {
-            logger.debug(req.body.walker)
             io.emit("walker_updated", {
                 walker_id,
                 w: req.body.walker

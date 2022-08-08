@@ -49,7 +49,7 @@ const sql_donations: SQL = `
         ON d.walker_id = walkers.rec_id 
     WHERE 
         d.needs_donation_receipt = 1 
-        AND donation_received = 1 
+        AND (donation_received = 1 OR donation_amount_received != 0.0)
         AND walkers.class LIKE ? 
     ORDER BY walkers.lastname, walkers.firstname, d.lastname, d.firstname 
 `;
@@ -72,7 +72,7 @@ const sql_donations_course: SQL = `
         ON d.walker_id = walkers.rec_id 
     WHERE 
         d.needs_donation_receipt = 1 
-        AND donation_received = 1 
+         AND (donation_received = 1 OR donation_amount_received != 0.0)
         AND walkers.class LIKE ? 
         AND walkers.course = ? 
     ORDER BY walkers.lastname, walkers.firstname, d.lastname, d.firstname 
