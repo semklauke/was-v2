@@ -46,13 +46,13 @@ r.post('/', secure, bodyParser.json(), function(req, res) {
         uuid: oat
     });
 
-    let u: string = 'https://'+config.ip.ipv4+req.body.url+'?oat='+oat;
+    let u: string = 'https://'+config.ip.ipv4+':'+config.port.https+req.body.url+'?oat='+oat;
     console.log(u);
     // use pupeteer to save pdf to tmp folder
     (async () => {
         const browser = await puppeteer.launch({
             ignoreHTTPSErrors: true,
-            args: ['--ignore-certificate-errors']
+            args: ['--no-sandbox', '--ignore-certificate-errors']
         });
         const page = await browser.newPage();
         
@@ -120,10 +120,10 @@ r.post('/all/slow', secure, bodyParser.json(), function(req, res) {
         }    
 
         (async (oats_array, urls, soiid) => {
-            const baseurl: string = 'https://'+config.ip.ipv4;
+            const baseurl: string = 'https://'+config.ip.ipv4+':'+config.port.https;
             const browser = await puppeteer.launch({
                 ignoreHTTPSErrors: true,
-                args: ['--ignore-certificate-errors']
+                args: ['--no-sandbox', '--ignore-certificate-errors']
             });
 
             const page = await browser.newPage();
@@ -183,10 +183,10 @@ r.post('/all', secure, bodyParser.json(), function(req, res) {
         });
 
         (async (soiid) => {
-            const baseurl: string = 'https://'+config.ip.ipv4;
+            const baseurl: string = 'https://'+config.ip.ipv4+':'+config.port.https;
             const browser = await puppeteer.launch({
                 ignoreHTTPSErrors: true,
-                args: ['--ignore-certificate-errors']
+                args: ['--no-sandbox', '--ignore-certificate-errors']
             });
 
             const page = await browser.newPage();
